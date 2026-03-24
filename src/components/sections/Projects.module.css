@@ -1,0 +1,103 @@
+.section {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px;
+  background: var(--black);
+  overflow: hidden;
+}
+
+.secLabel {
+  font-size: 9px;
+  letter-spacing: .25em;
+  color: var(--red);
+  margin-bottom: 40px;
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.card {
+  border: 1px solid #1a1a1a;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.card:hover {
+  border-color: var(--white);
+  background: #0f0f0f;
+}
+
+.card:hover .arrow {
+  color: var(--red);
+  transform: translate(4px, -4px);
+}
+
+.featured {
+  border-color: #2a2a2a;
+}
+
+.projNum {
+  font-size: 9px;
+  color: #333;
+  letter-spacing: .15em;
+  margin-bottom: 14px;
+}
+
+.featuredNum {
+  color: var(--red);
+}
+
+.projTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  line-height: 1;
+  margin-bottom: 10px;
+  color: var(--white);
+}
+
+.projDesc {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px;
+  color: #666;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.projTags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.tag {
+  font-size: 8px;
+  border: 1px solid #2a2a2a;
+  padding: 3px 8px;
+  color: #444;
+  letter-spacing: .08em;
+}
+
+.arrow {
+  position: absolute;
+  bottom: 28px;
+  right: 28px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: #222;
+  transition: color 0.2s, transform 0.2s;
+}

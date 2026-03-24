@@ -1,0 +1,86 @@
+.section {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px;
+  background: var(--black);
+  overflow: hidden;
+}
+
+.bigContact {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(64px, 12vw, 160px);
+  line-height: .9;
+  letter-spacing: -.01em;
+}
+
+.contactLine {
+  display: block;
+  overflow: hidden;
+}
+
+.contactLine span {
+  display: block;
+}
+
+.redText {
+  color: var(--red);
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 60px;
+}
+
+.link {
+  font-size: 12px;
+  color: #444;
+  letter-spacing: .12em;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: var(--white);
+}
+
+.linkLabel {
+  font-size: 8px;
+  color: #2a2a2a;
+  width: 70px;
+  letter-spacing: .15em;
+  flex-shrink: 0;
+}
+
+.linkValue {
+  color: inherit;
+}
+
+.redStripe {
+  position: absolute;
+  right: 0; top: 0;
+  width: 6px;
+  height: 100%;
+  background: var(--red);
+}
+
+.big05 {
+  position: absolute;
+  right: 60px;
+  bottom: 40px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 200px;
+  color: #111;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
