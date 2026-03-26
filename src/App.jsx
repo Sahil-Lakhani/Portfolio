@@ -49,7 +49,7 @@ export default function App() {
     }, 420)
   }, [transitioning, currentSection])
 
-  useScroll({ goTo, currentSection })
+  useScroll({ goTo, currentSection, loaded })
 
   return (
     <>
