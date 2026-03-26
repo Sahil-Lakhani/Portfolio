@@ -1,0 +1,21 @@
+.cursor {
+  position: fixed;
+  background: var(--red);
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+
+  /* Morphing blob — Framer Motion controls width/height, CSS handles the shape */
+  border-radius: 71% 29% 42% 58% / 38% 62% 38% 62%;
+  animation: blobMorph 5s ease-in-out infinite;
+}
+
+@keyframes blobMorph {
+  0%   { border-radius: 71% 29% 42% 58% / 38% 62% 38% 62%; }
+  20%  { border-radius: 28% 72% 55% 45% / 65% 35% 65% 35%; }
+  40%  { border-radius: 55% 45% 28% 72% / 42% 58% 42% 58%; }
+  60%  { border-radius: 42% 58% 71% 29% / 55% 45% 55% 45%; }
+  80%  { border-radius: 65% 35% 38% 62% / 28% 72% 28% 72%; }
+  100% { border-radius: 71% 29% 42% 58% / 38% 62% 38% 62%; }
+}

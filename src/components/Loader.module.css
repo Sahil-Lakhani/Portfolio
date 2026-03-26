@@ -1,0 +1,62 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  z-index: 150; /* below overlay (500) so red wipe covers it on enter */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+}
+
+/* ——— LOADING text ——— */
+.loadingText {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: #333;
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  position: absolute; /* centered independently */
+}
+
+.dots {
+  display: inline-block;
+  width: 1.5em; /* fixed width so text doesn't reflow */
+  text-align: left;
+}
+
+/* ——— NAME container ——— */
+.nameWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ——— ENTER button ——— */
+.enterBtn {
+  position: absolute;
+  bottom: 15vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: #333;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: none;
+  padding: 12px 0;
+  white-space: nowrap;
+}
+
+/* Thin line above enter button */
+.enterBtn::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 28px;
+  background: #222;
+  margin: 0 auto 16px;
+}
