@@ -26,10 +26,30 @@ export default function Cursor() {
     rafRef.current = requestAnimationFrame(tick)
 
     const onMove = (e) => {
-      cursorStore.x = e.clientX
-      cursorStore.y = e.clientY
-      el.style.left = e.clientX + 'px'
-      el.style.top  = e.clientY + 'px'
+      if (cursorStore.loaderActive) {
+        if (cursorStore.flashOn) {
+          // Blob at offset — drives TextReveal from offset position
+          const ox = e.clientX - 80
+          const oy = e.clientY - 40
+          cursorStore.x = ox
+          cursorStore.y = oy
+          el.style.left = ox + 'px'
+          el.style.top  = oy + 'px'
+          el.style.opacity = '1'
+        } else {
+          // Loader active but flashlight off — keep store at actual pos
+          // but hide the blob visually
+          cursorStore.x = e.clientX
+          cursorStore.y = e.clientY
+          el.style.opacity = '0'
+        }
+      } else {
+        cursorStore.x = e.clientX
+        cursorStore.y = e.clientY
+        el.style.left = e.clientX + 'px'
+        el.style.top  = e.clientY + 'px'
+        el.style.opacity = '1'
+      }
     }
 
     const onOver = (e) => {
