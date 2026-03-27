@@ -9,6 +9,8 @@ export const cursorStore = {
   y: 0,
   expanded: false,         // true while over the text zone
   radius: 0,               // lerped radius (written by Cursor's RAF)
+  loaderActive: false,     // true while FlashCursor is mounted
+  flashOn: false,          // true when blob should appear at offset
   listeners: new Set(),
 }
 
