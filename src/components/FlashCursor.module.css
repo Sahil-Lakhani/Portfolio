@@ -1,0 +1,10 @@
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 52px;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, 0);
+  will-change: left, top;
+}

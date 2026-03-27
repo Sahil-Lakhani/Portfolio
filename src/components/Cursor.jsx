@@ -19,6 +19,7 @@ export default function Cursor() {
     let targetR = SMALL_R
 
     function tick() {
+      el.style.visibility = (cursorStore.loaderActive && !cursorStore.flashOn) ? 'hidden' : ''
       cursorStore.radius = cursorStore.radius + (targetR - cursorStore.radius) * 0.1
       notifyCursorListeners()
       rafRef.current = requestAnimationFrame(tick)
@@ -35,20 +36,20 @@ export default function Cursor() {
           cursorStore.y = oy
           el.style.left = ox + 'px'
           el.style.top  = oy + 'px'
-          el.style.opacity = '1'
+          el.style.visibility = ''
         } else {
           // Loader active but flashlight off — keep store at actual pos
           // but hide the blob visually
           cursorStore.x = e.clientX
           cursorStore.y = e.clientY
-          el.style.opacity = '0'
+          el.style.visibility = 'hidden'
         }
       } else {
         cursorStore.x = e.clientX
         cursorStore.y = e.clientY
         el.style.left = e.clientX + 'px'
         el.style.top  = e.clientY + 'px'
-        el.style.opacity = '1'
+        el.style.visibility = ''
       }
     }
 
