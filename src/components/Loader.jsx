@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import styles from './Loader.module.css'
 import TextReveal from './TextReveal'
+import FlashCursor from './FlashCursor'
 
 const ease = [0.16, 1, 0.3, 1]
 
@@ -41,6 +42,7 @@ export default function Loader({ onEnter }) {
 
   return (
     <div className={styles.loader}>
+      <FlashCursor />
 
       {/* — LOADING phase — */}
       <AnimatePresence>

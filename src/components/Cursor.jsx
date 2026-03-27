@@ -19,7 +19,6 @@ export default function Cursor() {
     let targetR = SMALL_R
 
     function tick() {
-      el.style.visibility = (cursorStore.loaderActive && !cursorStore.flashOn) ? 'hidden' : ''
       cursorStore.radius = cursorStore.radius + (targetR - cursorStore.radius) * 0.1
       notifyCursorListeners()
       rafRef.current = requestAnimationFrame(tick)
@@ -62,10 +61,16 @@ export default function Cursor() {
       targetR = isText ? BIG_R : SMALL_R
     }
 
+    const syncVisibility = () => {
+      el.style.visibility = (cursorStore.loaderActive && !cursorStore.flashOn) ? 'hidden' : ''
+    }
+    cursorStore.listeners.add(syncVisibility)
+
     window.addEventListener('mousemove', onMove)
     document.addEventListener('mouseover', onOver)
 
     return () => {
+      cursorStore.listeners.delete(syncVisibility)
       window.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseover', onOver)
       cancelAnimationFrame(rafRef.current)
