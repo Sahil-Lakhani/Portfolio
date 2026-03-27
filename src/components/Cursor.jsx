@@ -29,8 +29,8 @@ export default function Cursor() {
       if (cursorStore.loaderActive) {
         if (cursorStore.flashOn) {
           // Blob at offset — drives TextReveal from offset position
-          const ox = e.clientX - 80
-          const oy = e.clientY - 40
+          const ox = e.clientX - 150
+          const oy = e.clientY - 100
           cursorStore.x = ox
           cursorStore.y = oy
           el.style.left = ox + 'px'
@@ -50,16 +50,32 @@ export default function Cursor() {
     }
 
     const onOver = (e) => {
-      const isText  = !!e.target.closest('[data-cursor-expand]')
-      const isHover = !!e.target.closest('a, button, [data-cursor-hover]') && !e.target.closest('[data-cursor-ignore]')
+      if (cursorStore.loaderActive) return // syncVisibility owns all state during loader
+      const isText = !!e.target.closest('[data-cursor-expand]')
       cursorStore.expanded = isText
       setExpanded(isText)
-      setHovered(!isText && isHover)
       targetR = isText ? BIG_R : SMALL_R
+      const isHover = !!e.target.closest('a, button, [data-cursor-hover]') && !e.target.closest('[data-cursor-ignore]')
+      setHovered(!isText && isHover)
     }
 
     const syncVisibility = () => {
-      el.style.visibility = (cursorStore.loaderActive && !cursorStore.flashOn) ? 'hidden' : ''
+      const shouldHide = cursorStore.loaderActive && !cursorStore.flashOn
+      el.style.visibility = shouldHide ? 'hidden' : ''
+      if (cursorStore.loaderActive && cursorStore.flashOn) {
+        targetR = BIG_R
+        setExpanded(true)
+        setHovered(false)
+        // Stop the morph animation so Framer Motion can hold a perfect circle
+        el.style.animation    = 'none'
+        el.style.borderRadius = '50%'
+      } else if (cursorStore.loaderActive && !cursorStore.flashOn) {
+        targetR = 0 // suppress TextReveal mask when flashlight is off
+        setExpanded(false)
+        setHovered(false)
+        el.style.animation    = ''
+        el.style.borderRadius = ''
+      }
     }
     cursorStore.listeners.add(syncVisibility)
 

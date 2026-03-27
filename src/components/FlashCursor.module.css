@@ -7,4 +7,5 @@
   z-index: 9998;
   transform: translate(-50%, 0);
   will-change: transform, left, top;
+  transition: transform 0.3s ease;
 }

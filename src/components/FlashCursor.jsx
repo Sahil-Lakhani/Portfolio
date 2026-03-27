@@ -22,6 +22,9 @@ export default function FlashCursor() {
       if (e.target.closest('[data-cursor-ignore]')) return
       cursorStore.flashOn = !cursorStore.flashOn
       notifyCursorListeners()
+      el.style.transform = cursorStore.flashOn
+        ? 'translate(-50%, 0) rotate(-45deg)'
+        : 'translate(-50%, 0)'
     }
 
     window.addEventListener('mousemove', onMove)

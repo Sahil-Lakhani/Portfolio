@@ -73,7 +73,7 @@ export default function TextReveal({
   return (
     <div
       ref={containerRef}
-      data-cursor-expand          /* tells Cursor to grow to BIG_R */
+      // data-cursor-expand — disabled: loader handles expand via syncVisibility
       style={{ position: 'relative', display: 'inline-block', cursor: 'none' }}
     >
       {/* Back layer — alternate text on solid bg, always fully rendered */}
