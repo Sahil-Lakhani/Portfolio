@@ -18,7 +18,8 @@ export default function FlashCursor() {
       el.style.top  = e.clientY + 'px'
     }
 
-    const onClick = () => {
+    const onClick = (e) => {
+      if (e.target.closest('[data-cursor-ignore]')) return
       cursorStore.flashOn = !cursorStore.flashOn
       notifyCursorListeners()
     }

@@ -35,20 +35,17 @@ export default function Cursor() {
           cursorStore.y = oy
           el.style.left = ox + 'px'
           el.style.top  = oy + 'px'
-          el.style.visibility = ''
         } else {
           // Loader active but flashlight off — keep store at actual pos
           // but hide the blob visually
           cursorStore.x = e.clientX
           cursorStore.y = e.clientY
-          el.style.visibility = 'hidden'
         }
       } else {
         cursorStore.x = e.clientX
         cursorStore.y = e.clientY
         el.style.left = e.clientX + 'px'
         el.style.top  = e.clientY + 'px'
-        el.style.visibility = ''
       }
     }
 
