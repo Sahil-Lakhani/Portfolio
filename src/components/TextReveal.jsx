@@ -106,25 +106,7 @@ export default function TextReveal({
         {frontText}
       </div>
 
-      {/* HOVER hint */}
-      <div
-        ref={hintRef}
-        style={{
-          position: 'absolute',
-          bottom: '-2.2em',
-          left: 0,
-          right: 0,
-          textAlign: 'center',
-          fontFamily: "'Space Mono', monospace",
-          fontSize: '10px',
-          letterSpacing: '.3em',
-          color: '#444',
-          transition: 'opacity 0.4s',
-          pointerEvents: 'none',
-        }}
-      >
-        HOVER
-      </div>
+      {/* HOVER hint removed */}
     </div>
   )
 }
