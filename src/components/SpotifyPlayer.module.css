@@ -1,0 +1,105 @@
+/* Outer shell — centers the capsule in the strip cell */
+.shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+/* Spotify renders its iframe here — just off the bottom edge of the viewport */
+.iframeContainer {
+  position: fixed;
+  bottom: -200px;
+  left: 0;
+  width: 300px;
+  height: 80px;
+  pointer-events: none;
+}
+
+/* The pill itself */
+.capsule {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 32px 0 10px;
+  height: 76px;
+  width: 380px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: 1px solid #222;
+  background: #0d0d0d;
+}
+
+/* Circular album art */
+.art,
+.artPlaceholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.artPlaceholder {
+  background: #1e1e1e;
+}
+
+/* Track info */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 220px;
+  min-width: 0;
+}
+
+.trackName {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--white);
+  letter-spacing: .06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: #444;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.btn {
+  background: transparent;
+  border: none;
+  color: #3a3a3a;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.btn:hover {
+  color: var(--red);
+}
+
+.btnPlay {
+  color: #555;
+  font-size: 20px;
+  width: 28px;
+  text-align: center;
+}
