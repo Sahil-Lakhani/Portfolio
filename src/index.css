@@ -38,6 +38,12 @@ body {
   overflow: hidden;
 }
 
+/* Hide Spotify iframe visually — opacity keeps audio running, no position override */
+iframe[src*="open.spotify.com"] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Noise overlay — global class (not scoped) since it has no CSS Module parent */
 .noise {
   position: fixed;

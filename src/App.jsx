@@ -18,8 +18,6 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState(0)
   const [transitioning, setTransitioning]   = useState(false)
   const [overlayPhase, setOverlayPhase]     = useState('idle')
-  const [scrollHintVisible, setScrollHintVisible] = useState(true)
-
   // Called by Loader when ENTER is clicked — same wipe as section transitions
   const handleEnter = useCallback(() => {
     setTransitioning(true)
@@ -38,7 +36,6 @@ export default function App() {
     if (transitioning || next === currentSection || next < 0 || next >= TOTAL) return
     setTransitioning(true)
     setOverlayPhase('in')
-    setScrollHintVisible(false)
     setTimeout(() => {
       setCurrentSection(next)
       setOverlayPhase('out')
@@ -80,12 +77,6 @@ export default function App() {
 
           <div className={styles.counter}>
             <span>{String(currentSection + 1).padStart(2, '0')}</span> / 05
-          </div>
-          <div
-            className={styles.scrollHint}
-            style={{ opacity: scrollHintVisible ? 1 : 0 }}
-          >
-            SCROLL OR ARROW KEYS
           </div>
         </>
       )}
