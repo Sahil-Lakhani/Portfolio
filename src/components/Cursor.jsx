@@ -26,9 +26,11 @@ export default function Cursor() {
     rafRef.current = requestAnimationFrame(tick)
 
     const onMove = (e) => {
+      // Always track real mouse — syncVisibility needs it on click
+      cursorStore.mouseX = e.clientX
+      cursorStore.mouseY = e.clientY
       if (cursorStore.loaderActive) {
         if (cursorStore.flashOn) {
-          // Blob at offset — drives TextReveal from offset position
           const ox = e.clientX - 150
           const oy = e.clientY - 100
           cursorStore.x = ox
@@ -36,8 +38,6 @@ export default function Cursor() {
           el.style.left = ox + 'px'
           el.style.top  = oy + 'px'
         } else {
-          // Loader active but flashlight off — keep store at actual pos
-          // but hide the blob visually
           cursorStore.x = e.clientX
           cursorStore.y = e.clientY
         }
@@ -60,21 +60,47 @@ export default function Cursor() {
     }
 
     const syncVisibility = () => {
-      const shouldHide = cursorStore.loaderActive && !cursorStore.flashOn
-      el.style.visibility = shouldHide ? 'hidden' : ''
       if (cursorStore.loaderActive && cursorStore.flashOn) {
+        // Immediately position blob at offset using current real mouse pos —
+        // avoids the one-frame jump while waiting for the next mousemove
+        const ox = cursorStore.mouseX - 150
+        const oy = cursorStore.mouseY - 100
+        cursorStore.x  = ox
+        cursorStore.y  = oy
+        el.style.left  = ox + 'px'
+        el.style.top   = oy + 'px'
+        // Snap radius to full size — eliminates lerp delay and fast-toggle ghost
+        cursorStore.radius = BIG_R
         targetR = BIG_R
         setExpanded(true)
         setHovered(false)
-        // Stop the morph animation so Framer Motion can hold a perfect circle
         el.style.animation    = 'none'
         el.style.borderRadius = '50%'
+        el.style.visibility   = ''
       } else if (cursorStore.loaderActive && !cursorStore.flashOn) {
-        targetR = 0 // suppress TextReveal mask when flashlight is off
+        // Snap radius to 0 instantly — no lerp ghost on fast toggle
+        cursorStore.radius = 0
+        targetR = 0
+        cursorStore.x = cursorStore.mouseX
+        cursorStore.y = cursorStore.mouseY
         setExpanded(false)
         setHovered(false)
         el.style.animation    = ''
         el.style.borderRadius = ''
+        el.style.visibility   = 'hidden'
+      } else {
+        // Loader exited — full reset regardless of what flashOn was
+        cursorStore.radius = 0
+        targetR = SMALL_R
+        cursorStore.x = cursorStore.mouseX
+        cursorStore.y = cursorStore.mouseY
+        el.style.left         = cursorStore.mouseX + 'px'
+        el.style.top          = cursorStore.mouseY + 'px'
+        el.style.visibility   = ''
+        el.style.animation    = ''
+        el.style.borderRadius = ''
+        setExpanded(false)
+        setHovered(false)
       }
     }
     cursorStore.listeners.add(syncVisibility)

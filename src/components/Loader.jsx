@@ -4,8 +4,6 @@ import styles from './Loader.module.css'
 import TextReveal from './TextReveal'
 import FlashCursor from './FlashCursor'
 
-const ease = [0.16, 1, 0.3, 1]
-
 // Animated loading dots — cycles . → .. → ... → repeat
 function LoadingDots() {
   const [count, setCount] = useState(1)
@@ -88,6 +86,22 @@ export default function Loader({ onEnter }) {
           >
             ENTER
           </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* — FLASHLIGHT HINT — */}
+      <AnimatePresence>
+        {phase === 'ready' && (
+          <motion.p
+            key="flash-hint"
+            className={styles.flashHint}
+            data-text="click to turn on the flashlight — search the other side"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.6 } }}
+            exit={{ opacity: 0 }}
+          >
+            click to turn on the flashlight — search the other side
+          </motion.p>
         )}
       </AnimatePresence>
 
