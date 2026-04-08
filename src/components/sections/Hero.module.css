@@ -103,29 +103,24 @@
 }
 
 /* ── D1ECAST cell ───────────────────────────────────────── */
-.diecastInner {
+.cellDiecast {
+  padding: 0;
+  overflow: hidden;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  align-items: flex-start;
 }
 
-.diecastBtn {
-  font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--red);
-  background: transparent;
-  border: 1px solid var(--red);
-  padding: 10px 22px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.diecastBtn:hover {
-  background: var(--red);
-  color: var(--black);
+.diecastText {
+  display: block;
+  font-family: 'Badeen Display', sans-serif;
+  font-size: clamp(68px, 9vw, 190px);
+  line-height: 1;
+  color: var(--white);
+  padding: 0;
+  margin: 0;
+  transform: translateY(-0.24em);
+  white-space: nowrap;
+  width: 100%;
 }
 
 /* ── Map cell ───────────────────────────────────────────── */
