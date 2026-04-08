@@ -34,8 +34,8 @@
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 60fr 40fr;
-  grid-template-rows: 1fr 1fr 1fr 120px;
+  grid-template-columns: 68fr 36fr;
+  grid-template-rows: clamp(55px, 6.5vw, +135px) 2fr 1fr 120px;
   gap: 1px;
   background: #1e1e1e;          /* gap colour — creates grid lines */
   box-sizing: border-box;

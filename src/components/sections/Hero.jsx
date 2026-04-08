@@ -59,9 +59,7 @@ export default function Hero({ isActive }) {
             visible: { opacity: 1, transition: { duration: 0.6, ease, delay: 0.2 } },
           }}
         >
-          <div className={styles.diecastInner}>
-            <button type="button" className={styles.diecastBtn}>D1ECAST</button>
-          </div>
+          <span className={styles.diecastText}>D1ecast</span>
         </motion.div>
 
         {/* ── Map cell ── */}
