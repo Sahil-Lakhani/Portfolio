@@ -19,6 +19,15 @@ export default function FallingLetters({ isActive }) {
   // Sync immediately during render so keydown fires without delay
   isActiveRef.current = isActive
 
+  // Clear all letters when leaving the Projects section
+  useEffect(() => {
+    if (!isActive && engineRef.current) {
+      const bodies = Matter.Composite.allBodies(engineRef.current.world).filter(b => !b.isStatic)
+      bodies.forEach(b => Matter.Composite.remove(engineRef.current.world, b))
+      lettersRef.current = []
+    }
+  }, [isActive])
+
   useEffect(() => {
     function roundedRect(ctx, x, y, w, h, r) {
       ctx.beginPath()
@@ -94,19 +103,17 @@ export default function FallingLetters({ isActive }) {
     function spawnLetter(char) {
       const W = window.innerWidth
 
-      const allBodies = Matter.Composite.allBodies(engine.world).filter(b => !b.isStatic)
-      if (allBodies.length > 0) {
-        const minY = allBodies.reduce((min, b) => Math.min(min, b.bounds.min.y), Infinity)
-        if (minY < LETTER_H * 2) return
-      }
+      const nonStatic = Matter.Composite.allBodies(engine.world).filter(b => !b.isStatic)
+      if (nonStatic.some(b => b.bounds.min.y <= 0)) return
 
       const x = LETTER_W + Math.random() * (W - LETTER_W * 2)
-      const y = -LETTER_H
+      const y = LETTER_H / 2
       const body = Matter.Bodies.rectangle(x, y, LETTER_W, LETTER_H, {
         restitution: 0.2,
         friction: 0.5,
         frictionAir: 0.01,
         angle: (Math.random() - 0.5) * 0.3,
+        velocity: { x: (Math.random() - 0.5) * 3, y: 1 + Math.random() * 2 },
       })
       Matter.Composite.add(engine.world, body)
       lettersRef.current.push({ body, char, accent: Math.random() < 0.1 })
