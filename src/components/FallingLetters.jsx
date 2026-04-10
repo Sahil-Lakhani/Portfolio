@@ -9,26 +9,35 @@ const GRAVITY  = 2
 const CHARSET  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 export default function FallingLetters({ isActive }) {
-  const canvasRef    = useRef(null)
-  const engineRef    = useRef(null)
-  const lettersRef   = useRef([])
-  const particlesRef = useRef([])
-  const rafRef       = useRef(null)
-  const isActiveRef  = useRef(isActive)
-  const ctxRef       = useRef(null)
-  const resetRef     = useRef(null)
+  const canvasRef      = useRef(null)
+  const engineRef      = useRef(null)
+  const lettersRef     = useRef([])
+  const particlesRef   = useRef([])   // explosion particles
+  const finalSuckRef   = useRef([])   // letters in wormhole shrink phase
+  const suckActiveRef  = useRef(false)
+  const wormholeRef    = useRef({ x: 0, y: 0 })
+  const rafRef         = useRef(null)
+  const isActiveRef    = useRef(isActive)
+  const ctxRef         = useRef(null)
+  const resetRef       = useRef(null)
   const [hasLetters, setHasLetters] = useState(false)
 
-  // Sync immediately during render so keydown fires without delay
   isActiveRef.current = isActive
 
-  // Clear all letters when leaving the Projects section
   useEffect(() => {
     if (!isActive && engineRef.current) {
+      // Clear canvas immediately — don't wait for the next RAF frame
+      const ctx = ctxRef.current
+      const canvas = canvasRef.current
+      if (ctx && canvas) ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+
       const bodies = Matter.Composite.allBodies(engineRef.current.world).filter(b => !b.isStatic)
       bodies.forEach(b => Matter.Composite.remove(engineRef.current.world, b))
-      lettersRef.current = []
+      lettersRef.current   = []
       particlesRef.current = []
+      finalSuckRef.current = []
+      suckActiveRef.current = false
+      engineRef.current.gravity.y = GRAVITY
       setHasLetters(false)
     }
   }, [isActive])
@@ -48,12 +57,72 @@ export default function FallingLetters({ isActive }) {
       ctx.closePath()
     }
 
+    function drawWormhole(ctx, x, y) {
+      const t = Date.now() * 0.004
+
+      // Outer glow — red → black
+      const grd = ctx.createRadialGradient(x, y, 4, x, y, 110)
+      grd.addColorStop(0,   'rgba(255, 60, 0, 0.65)')
+      grd.addColorStop(0.45, 'rgba(255, 60, 0, 0.15)')
+      grd.addColorStop(1,   'rgba(0, 0, 0, 0)')
+      ctx.beginPath()
+      ctx.arc(x, y, 110, 0, Math.PI * 2)
+      ctx.fillStyle = grd
+      ctx.fill()
+
+      // Concentric pulsing rings — alternating red / cream
+      for (let i = 5; i >= 1; i--) {
+        const r = i * 10 + Math.sin(t * 1.5 + i) * 3
+        ctx.beginPath()
+        ctx.arc(x, y, r, 0, Math.PI * 2)
+        ctx.strokeStyle = i % 2 === 0
+          ? `rgba(240, 237, 230, ${0.18 * (i / 5)})`   // cream
+          : `rgba(255, 60, 0, ${0.22 * (i / 5)})`       // red
+        ctx.lineWidth = i === 5 ? 1 : 2
+        ctx.stroke()
+      }
+
+      // Rotating arc segments — red
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.rotate(t * 2)
+      for (let i = 0; i < 3; i++) {
+        ctx.rotate((Math.PI * 2) / 3)
+        ctx.beginPath()
+        ctx.arc(0, 0, 28, 0, Math.PI * 0.6)
+        ctx.strokeStyle = 'rgba(255, 60, 0, 0.55)'
+        ctx.lineWidth = 2.5
+        ctx.stroke()
+      }
+      ctx.restore()
+
+      // Inner cream ring
+      ctx.beginPath()
+      ctx.arc(x, y, 18, 0, Math.PI * 2)
+      ctx.strokeStyle = 'rgba(240, 237, 230, 0.4)'
+      ctx.lineWidth = 1.5
+      ctx.stroke()
+
+      // Dark void center
+      ctx.beginPath()
+      ctx.arc(x, y, 13, 0, Math.PI * 2)
+      ctx.fillStyle = '#000'
+      ctx.fill()
+    }
+
     function draw() {
       const canvas = canvasRef.current
       const ctx = ctxRef.current
       if (!canvas || !ctx) return
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
 
+      // Wormhole
+      if (suckActiveRef.current || finalSuckRef.current.length > 0) {
+        const { x, y } = wormholeRef.current
+        drawWormhole(ctx, x, y)
+      }
+
+      // Physics letters
       lettersRef.current.forEach(({ body, char, accent }) => {
         const { x, y } = body.position
         ctx.save()
@@ -73,7 +142,33 @@ export default function FallingLetters({ isActive }) {
         ctx.restore()
       })
 
-      // Particles
+      // Final suck phase — letters shrink into wormhole
+      const { x: wx, y: wy } = wormholeRef.current
+      const aliveFinal = []
+      finalSuckRef.current.forEach(item => {
+        item.x    += (wx - item.x) * 0.22
+        item.y    += (wy - item.y) * 0.22
+        item.scale *= 0.82
+        item.alpha -= 0.06
+        if (item.alpha <= 0 || item.scale < 0.015) return
+        ctx.save()
+        ctx.translate(item.x, item.y)
+        ctx.scale(item.scale, item.scale)
+        ctx.globalAlpha = Math.max(0, item.alpha)
+        roundedRect(ctx, -LETTER_W / 2, -LETTER_H / 2, LETTER_W, LETTER_H, RADIUS)
+        ctx.fillStyle = '#2a2a2a'
+        ctx.fill()
+        ctx.fillStyle = item.accent ? '#ff3c00' : '#f0ede6'
+        ctx.font = `bold ${Math.floor(LETTER_H * 0.58)}px "Bebas Neue", "Space Mono", monospace`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(item.char, 0, 2)
+        ctx.restore()
+        aliveFinal.push(item)
+      })
+      finalSuckRef.current = aliveFinal
+
+      // Explosion particles
       const alive = []
       particlesRef.current.forEach(p => {
         p.x  += p.vx
@@ -126,6 +221,7 @@ export default function FallingLetters({ isActive }) {
 
     function spawnLetter(char) {
       const W = window.innerWidth
+      if (suckActiveRef.current) return
 
       const nonStatic = Matter.Composite.allBodies(engine.world).filter(b => !b.isStatic)
       if (nonStatic.some(b => b.bounds.min.y <= 0)) return
@@ -144,6 +240,7 @@ export default function FallingLetters({ isActive }) {
       if (lettersRef.current.length === 1) setHasLetters(true)
     }
 
+    // ── EXPLOSION mode (swap resetRef.current below to use this) ────────────
     function handleReset() {
       lettersRef.current.forEach(({ body, accent }) => {
         const { x, y } = body.position
@@ -163,6 +260,15 @@ export default function FallingLetters({ isActive }) {
       setHasLetters(false)
     }
 
+    // ── WORMHOLE mode ─────────────────────────────────────────────────────────
+    function handleSuckReset() {
+      wormholeRef.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+      engine.gravity.y = 0
+      suckActiveRef.current = true
+      setHasLetters(false)
+    }
+
+    // handleReset to go back to explosion
     resetRef.current = handleReset
 
     function animate() {
@@ -173,6 +279,46 @@ export default function FallingLetters({ isActive }) {
         if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
         return
       }
+
+      // Wormhole suck physics
+      if (suckActiveRef.current && lettersRef.current.length > 0) {
+        const { x: wx, y: wy } = wormholeRef.current
+        const remaining = []
+        lettersRef.current.forEach(entry => {
+          const { body } = entry
+          const dx = wx - body.position.x
+          const dy = wy - body.position.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+
+          if (dist < 38) {
+            // Hand off to shrink animation
+            Matter.Composite.remove(engine.world, body)
+            finalSuckRef.current.push({
+              x: body.position.x,
+              y: body.position.y,
+              char:  entry.char,
+              accent: entry.accent,
+              scale: 1,
+              alpha: 1,
+            })
+          } else {
+            // Pull toward wormhole — speed scales with proximity
+            const speed = Math.min(80, 1400 / dist)
+            Matter.Body.setVelocity(body, {
+              x: body.velocity.x * 0.35 + (dx / dist) * speed * 1.5,
+              y: body.velocity.y * 0.35 + (dy / dist) * speed * 1.5,
+            })
+            remaining.push(entry)
+          }
+        })
+        lettersRef.current = remaining
+
+        if (remaining.length === 0) {
+          suckActiveRef.current = false
+          engine.gravity.y = GRAVITY
+        }
+      }
+
       Matter.Engine.update(engine, 1000 / 60)
       draw()
     }
@@ -206,8 +352,9 @@ export default function FallingLetters({ isActive }) {
       window.removeEventListener('resize', onResize)
       Matter.World.clear(engineRef.current.world, false)
       Matter.Engine.clear(engineRef.current)
-      lettersRef.current = []
+      lettersRef.current   = []
       particlesRef.current = []
+      finalSuckRef.current = []
     }
   }, [])
 
