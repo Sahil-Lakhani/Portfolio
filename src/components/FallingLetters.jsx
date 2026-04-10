@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
 import styles from './FallingLetters.module.css'
 
@@ -12,9 +12,12 @@ export default function FallingLetters({ isActive }) {
   const canvasRef    = useRef(null)
   const engineRef    = useRef(null)
   const lettersRef   = useRef([])
+  const particlesRef = useRef([])
   const rafRef       = useRef(null)
   const isActiveRef  = useRef(isActive)
   const ctxRef       = useRef(null)
+  const resetRef     = useRef(null)
+  const [hasLetters, setHasLetters] = useState(false)
 
   // Sync immediately during render so keydown fires without delay
   isActiveRef.current = isActive
@@ -25,6 +28,8 @@ export default function FallingLetters({ isActive }) {
       const bodies = Matter.Composite.allBodies(engineRef.current.world).filter(b => !b.isStatic)
       bodies.forEach(b => Matter.Composite.remove(engineRef.current.world, b))
       lettersRef.current = []
+      particlesRef.current = []
+      setHasLetters(false)
     }
   }, [isActive])
 
@@ -48,6 +53,7 @@ export default function FallingLetters({ isActive }) {
       const ctx = ctxRef.current
       if (!canvas || !ctx) return
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+
       lettersRef.current.forEach(({ body, char, accent }) => {
         const { x, y } = body.position
         ctx.save()
@@ -66,6 +72,24 @@ export default function FallingLetters({ isActive }) {
         ctx.fillText(char, 0, 2)
         ctx.restore()
       })
+
+      // Particles
+      const alive = []
+      particlesRef.current.forEach(p => {
+        p.x  += p.vx
+        p.y  += p.vy
+        p.vy += 0.3
+        p.alpha -= 0.022
+        p.size  *= 0.95
+        if (p.alpha <= 0) return
+        ctx.save()
+        ctx.globalAlpha = Math.max(0, p.alpha)
+        ctx.fillStyle = p.color
+        ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size)
+        ctx.restore()
+        alive.push(p)
+      })
+      particlesRef.current = alive
     }
 
     function addBoundaries(engine, W, H) {
@@ -117,7 +141,29 @@ export default function FallingLetters({ isActive }) {
       })
       Matter.Composite.add(engine.world, body)
       lettersRef.current.push({ body, char, accent: Math.random() < 0.1 })
+      if (lettersRef.current.length === 1) setHasLetters(true)
     }
+
+    function handleReset() {
+      lettersRef.current.forEach(({ body, accent }) => {
+        const { x, y } = body.position
+        for (let i = 0; i < 10; i++) {
+          particlesRef.current.push({
+            x, y,
+            vx: (Math.random() - 0.5) * 16,
+            vy: (Math.random() - 0.5) * 16 - 3,
+            alpha: 1,
+            size: 5 + Math.random() * 7,
+            color: (accent || Math.random() < 0.25) ? '#ff3c00' : '#f0ede6',
+          })
+        }
+        Matter.Composite.remove(engine.world, body)
+      })
+      lettersRef.current = []
+      setHasLetters(false)
+    }
+
+    resetRef.current = handleReset
 
     function animate() {
       rafRef.current = requestAnimationFrame(animate)
@@ -161,13 +207,30 @@ export default function FallingLetters({ isActive }) {
       Matter.World.clear(engineRef.current.world, false)
       Matter.Engine.clear(engineRef.current)
       lettersRef.current = []
+      particlesRef.current = []
     }
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`${styles.canvas} ${isActive ? styles.active : styles.hidden}`}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className={`${styles.canvas} ${isActive ? styles.active : styles.hidden}`}
+      />
+      {isActive && hasLetters && (
+        <button
+          className={styles.resetBtn}
+          onClick={() => resetRef.current?.()}
+          aria-label="Clear letters"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+      )}
+    </>
   )
 }
