@@ -121,7 +121,12 @@ export default function FallingLetters({ isActive }) {
 
     function animate() {
       rafRef.current = requestAnimationFrame(animate)
-      if (!isActiveRef.current) return
+      if (!isActiveRef.current) {
+        const canvas = canvasRef.current
+        const ctx = ctxRef.current
+        if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+        return
+      }
       Matter.Engine.update(engine, 1000 / 60)
       draw()
     }
