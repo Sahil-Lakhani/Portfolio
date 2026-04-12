@@ -9,7 +9,7 @@ import About from './components/sections/About'
 import Projects from './components/sections/Projects'
 import Skills from './components/sections/Skills'
 import Contact from './components/sections/Contact'
-import FallingLetters from './components/FallingLetters'
+// import FallingLetters from './components/FallingLetters'
 import useScroll from './hooks/useScroll'
 
 const TOTAL = 5
@@ -76,8 +76,7 @@ export default function App() {
             <Contact  isActive={currentSection === 4} />
           </div>
 
-          <FallingLetters isActive={currentSection === 2} />
-
+          {/* <FallingLetters isActive={currentSection === 2} /> */}
           <div className={styles.counter}>
             <span>{String(currentSection + 1).padStart(2, '0')}</span> / 05
           </div>
