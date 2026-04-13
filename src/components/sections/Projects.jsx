@@ -1,16 +1,21 @@
 import { useState, useRef, useEffect } from 'react'
+import unifetchImg  from '../../assets/unifetch.png'
+import unifetchImg2 from '../../assets/unifetch-2.png'
+import unifetchImg3 from '../../assets/unifetch-3.png'
+import unifetchImg4 from '../../assets/unifetch-4.png'
 import { motion, AnimatePresence } from 'framer-motion'
 import styles from './Projects.module.css'
 
 const PROJECTS = [
   {
     num: '001',
-    title: 'DISTRIBUTED TASK QUEUE',
-    desc: 'Redis-backed job scheduler handling 10k+ jobs/sec. Zero message loss across 18 months of production. Built for fault tolerance at scale.',
-    tags: ['RUST', 'REDIS', 'TOKIO', 'GRPC'],
-    stat: '10K+ JOBS/SEC',
-    github: '#',
-    demo: '#',
+    title: 'UNIFETCH',
+    desc: 'UniFetch is a full-stack web application that lets students discover German university programs independently — without paying consultancies or manually browsing dozens of university sites.\n\nUsers search and filter official DAAD data by degree type, teaching language, and intake period, then export results as a structured CSV for easy comparison. A scraping API handles dynamic content and extracts program details, university info, and admission requirements automatically.\n\nI built this after seeing how much time and money students waste collecting this data manually. UniFetch replaces that entire workflow with direct, reliable access to the information they need.\n\nStack: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Framer Motion (frontend) · Python Flask, Selenium, BeautifulSoup (backend) · Docker',
+    tags: ['REACT', 'VITE', 'TAILWIND', 'FRAMER', 'FLASK', 'SELENIUM', 'BEAUTIFULSOUP', 'AWS'],
+    stat: 'LIVE — VERCEL',
+    github: 'https://github.com/Sahil-Lakhani/uni-fetch',
+    demo: 'https://unifetch.vercel.app/',
+    images: [unifetchImg, unifetchImg2, unifetchImg4, unifetchImg3],
   },
   {
     num: '002',
@@ -20,6 +25,7 @@ const PROJECTS = [
     stat: '40K MAU',
     github: '#',
     demo: '#',
+    images: [],
   },
   {
     num: '003',
@@ -29,6 +35,7 @@ const PROJECTS = [
     stat: '60% COST CUT',
     github: '#',
     demo: '#',
+    images: [],
   },
   {
     num: '004',
@@ -38,6 +45,7 @@ const PROJECTS = [
     stat: '2.4K STARS',
     github: '#',
     demo: '#',
+    images: [],
   },
 ]
 
@@ -103,34 +111,34 @@ function scrambleTo(el, newText, staggerMs = 18, cyclesPerChar = 7) {
 
 const midVariants = {
   hidden:  { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.25 } },
-  exit:    { opacity: 0, transition: { duration: 0.12, ease: 'easeIn' } },
+  visible: { opacity: 1, transition: { duration: 0.15 } },
+  exit:    { opacity: 0, transition: { duration: 0.08, ease: 'easeIn' } },
 }
 
 const statVariants = {
   hidden:  { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.35, delay: 0.05 } },
+  visible: { opacity: 1, transition: { duration: 0.18, delay: 0.03 } },
 }
 
 // Word-slide stagger container (same mechanic as About section)
 const descContainerVariants = {
   hidden:  {},
-  visible: { transition: { delayChildren: 0.12, staggerChildren: 0.03 } },
+  visible: { transition: { delayChildren: 0.06, staggerChildren: 0.008 } },
 }
 
 const wordVariants = {
   hidden:  { y: '100%' },
-  visible: { y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+  visible: { y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
 }
 
 const tagsContainerVariants = {
   hidden:  {},
-  visible: { transition: { delayChildren: 0.32, staggerChildren: 0.07 } },
+  visible: { transition: { delayChildren: 0.14, staggerChildren: 0.04 } },
 }
 
 const tagVariants = {
-  hidden:  { opacity: 0, y: 6 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.22 } },
+  hidden:  { opacity: 0, y: 4 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.14 } },
 }
 
 const GithubIcon = () => (
@@ -143,12 +151,17 @@ export default function Projects({ isActive }) {
   const [activeIdx, setActiveIdx] = useState(0)
   const [direction, setDirection] = useState(1)
   const [preJump, setPreJump]     = useState(null)  // { cardIdx, slot } | null
+  const [lightbox, setLightbox]   = useState(null)  // null | image src string
+  const [loadedImgs, setLoadedImgs] = useState({})  // src → true once loaded
 
   const busyRef      = useRef(false)
   const activeIdxRef = useRef(0)
   const directionRef = useRef(1)
   const titleRef     = useRef(null)
   const navigateRef  = useRef(null)
+  const filmRef        = useRef(null)
+  const dragRef        = useRef({ dragging: false, startX: 0, scrollLeft: 0 })
+  const scrollBarRef   = useRef(null)
 
   activeIdxRef.current = activeIdx
   directionRef.current = direction
@@ -197,6 +210,51 @@ export default function Projects({ isActive }) {
       scrambleTo(titleRef.current, PROJECTS[activeIdxRef.current].title, 18, 7)
     }
   }, [isActive])
+
+  // Scroll indicator sync
+  const onFilmScroll = () => {
+    const el  = filmRef.current
+    const bar = scrollBarRef.current
+    if (!el || !bar) return
+    const ratio     = el.scrollWidth > el.clientWidth
+      ? el.clientWidth / el.scrollWidth
+      : 1
+    const offsetRatio = el.scrollLeft / (el.scrollWidth - el.clientWidth)
+    bar.style.width = `${ratio * 100}%`
+    bar.style.left  = `${offsetRatio * (100 - ratio * 100)}%`
+  }
+
+  useEffect(() => {
+    const el = filmRef.current
+    if (!el) return
+    onFilmScroll()                          // set initial state
+    el.addEventListener('scroll', onFilmScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onFilmScroll)
+  }, [activeIdx])                           // re-run when project changes
+
+  // Film strip drag-to-scroll
+  const onFilmMouseDown = (e) => {
+    dragRef.current = { dragging: true, startX: e.pageX, scrollLeft: filmRef.current.scrollLeft, moved: false }
+    filmRef.current.style.cursor = 'grabbing'
+  }
+  const onFilmMouseMove = (e) => {
+    if (!dragRef.current.dragging) return
+    e.preventDefault()
+    const dx = e.pageX - dragRef.current.startX
+    if (Math.abs(dx) > 4) dragRef.current.moved = true
+    filmRef.current.scrollLeft = dragRef.current.scrollLeft - dx
+  }
+  const onFilmMouseUp = () => {
+    dragRef.current.dragging = false
+    if (filmRef.current) filmRef.current.style.cursor = 'grab'
+  }
+
+  // Close lightbox on Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setLightbox(null) }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
 
   // Keyboard navigation
   // useEffect(() => {
@@ -288,18 +346,50 @@ export default function Projects({ isActive }) {
               className={styles.titleUnderline}
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.04 }}
             />
           </div>
 
-          {/* ZONE 2 — image (locked height, never remounts) */}
-          <div className={styles.imageZone}>
-            <div className={`${styles.imgCorner} ${styles.imgCornerTL}`} />
-            <div className={`${styles.imgCorner} ${styles.imgCornerTR}`} />
-            <div className={`${styles.imgCorner} ${styles.imgCornerBL}`} />
-            <div className={`${styles.imgCorner} ${styles.imgCornerBR}`} />
-            <div className={styles.projectImagePlaceholder} />
-          </div>
+          {/* ZONE 2 — film strip (only rendered when project has images) */}
+          {project.images && project.images.length > 0 && (
+            <div className={styles.filmStripWrap} onMouseLeave={onFilmMouseUp}>
+              <div className={`${styles.imgCorner} ${styles.imgCornerTL}`} />
+              <div className={`${styles.imgCorner} ${styles.imgCornerTR}`} />
+              <div className={`${styles.imgCorner} ${styles.imgCornerBL}`} />
+              <div className={`${styles.imgCorner} ${styles.imgCornerBR}`} />
+              <div
+                className={styles.filmStrip}
+                ref={filmRef}
+                onMouseDown={onFilmMouseDown}
+                onMouseMove={onFilmMouseMove}
+                onMouseUp={onFilmMouseUp}
+                onMouseLeave={onFilmMouseUp}
+              >
+                {project.images.map((src, i) => (
+                  <button
+                    key={i}
+                    className={styles.filmThumb}
+                    onClick={() => { if (!dragRef.current.moved) setLightbox(src) }}
+                    data-cursor-hover
+                    aria-label={`Screenshot ${i + 1}`}
+                  >
+                    {!loadedImgs[src] && <div className={styles.imgSkeleton} />}
+                    <img
+                      src={src}
+                      alt=""
+                      className={loadedImgs[src] ? styles.imgLoaded : styles.imgLoading}
+                      onLoad={() => setLoadedImgs(prev => ({ ...prev, [src]: true }))}
+                    />
+                    <div className={styles.filmThumbOverlay} />
+                  </button>
+                ))}
+              </div>
+              {/* scroll indicator */}
+              <div className={styles.filmScrollTrack}>
+                <div className={styles.filmScrollBar} ref={scrollBarRef} />
+              </div>
+            </div>
+          )}
 
           {/* ZONE 3 — desc + buttons (fills remaining height)
               Only the inner content animates — the zone container never moves */}
@@ -313,15 +403,15 @@ export default function Projects({ isActive }) {
                 animate={isActive ? 'visible' : 'hidden'}
                 exit="exit"
               >
-                <motion.div className={styles.panelStat} variants={statVariants}>
-                  {project.stat}
-                </motion.div>
-
                 <motion.div className={styles.panelDesc} variants={descContainerVariants}>
-                  {project.desc.split(' ').map((word, i) => (
-                    <motion.span key={i} className={styles.descWord}>
-                      <motion.span variants={wordVariants}>{word}</motion.span>
-                    </motion.span>
+                  {project.desc.split('\n\n').map((para, pi) => (
+                    <p key={pi} className={styles.descPara}>
+                      {para.split(' ').map((word, i) => (
+                        <motion.span key={i} className={styles.descWord}>
+                          <motion.span variants={wordVariants}>{word}</motion.span>
+                        </motion.span>
+                      ))}
+                    </p>
                   ))}
                 </motion.div>
 
@@ -340,29 +430,63 @@ export default function Projects({ isActive }) {
             </AnimatePresence>
 
             <div className={styles.panelActions}>
-              <a
-                href={project.github}
-                className={styles.btnPrimary}
-                data-cursor-hover
-                target="_blank"
-                rel="noreferrer"
-              >
-                <GithubIcon /> GITHUB
-              </a>
-              <a
-                href={project.demo}
-                className={styles.btnSecondary}
-                data-cursor-hover
-                target="_blank"
-                rel="noreferrer"
-              >
-                LIVE DEMO
-              </a>
+              {project.github && (
+                <a
+                  href={project.github}
+                  className={styles.btnPrimary}
+                  data-cursor-hover
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <GithubIcon /> GITHUB
+                </a>
+              )}
+              {project.demo && project.demo !== '#' && (
+                <a
+                  href={project.demo}
+                  className={styles.btnSecondary}
+                  data-cursor-hover
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LIVE DEMO
+                </a>
+              )}
             </div>
           </div>
 
         </div>
       </div>
+
+      {/* ── LIGHTBOX ── */}
+      <AnimatePresence>
+        {lightbox && (
+          <motion.div
+            className={styles.lightboxOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={() => setLightbox(null)}
+          >
+            <motion.img
+              src={lightbox}
+              className={styles.lightboxImg}
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              className={styles.lightboxClose}
+              onClick={() => setLightbox(null)}
+              aria-label="Close"
+            >✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </section>
   )
 }

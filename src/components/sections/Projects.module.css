@@ -243,30 +243,189 @@
   overflow: hidden;
 }
 
-/* ─── PROJECT IMAGE ─── */
-.projectImagePlaceholder {
-  width: 100%;
-  height: 100%;       /* fills imageZone — height comes from grid row (240px) */
-  background: #0c0c0c;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 36px 36px;
-  display: block;
+/* ─── FILM STRIP ─── */
+.filmStripWrap {
+  position: relative;
+  padding: 8px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .imgCorner {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 12px;
+  height: 12px;
   pointer-events: none;
   z-index: 2;
 }
 
-.imgCornerTL { top: 0;    left: 0;  border-top: 1px solid var(--red); border-left:  1px solid var(--red); }
-.imgCornerTR { top: 0;    right: 0; border-top: 1px solid var(--red); border-right: 1px solid var(--red); }
-.imgCornerBL { bottom: 0; left: 0;  border-bottom: 1px solid var(--red); border-left:  1px solid var(--red); }
-.imgCornerBR { bottom: 0; right: 0; border-bottom: 1px solid var(--red); border-right: 1px solid var(--red); }
+.imgCornerTL { top: 0; left: 0;    border-top: 1px solid var(--red); border-left:  1px solid var(--red); }
+.imgCornerTR { top: 0; right: 0;   border-top: 1px solid var(--red); border-right: 1px solid var(--red); }
+.imgCornerBL { bottom: 0; left: 0; border-bottom: 1px solid var(--red); border-left:  1px solid var(--red); }
+.imgCornerBR { bottom: 0; right: 0;border-bottom: 1px solid var(--red); border-right: 1px solid var(--red); }
+
+.filmStrip {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  height: 310px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  align-items: stretch;
+  background: #080808;
+  padding: 0 2px;
+  cursor: grab;
+  user-select: none;
+}
+
+.filmStrip::-webkit-scrollbar {
+  display: none;
+}
+
+.filmThumb {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  background: #111;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.filmThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s, opacity 0.35s ease;
+}
+
+.imgLoading {
+  opacity: 0;
+}
+
+.imgLoaded {
+  opacity: 1;
+}
+
+.filmThumb:hover img {
+  transform: scale(1.04);
+}
+
+/* ─── IMAGE SKELETON LOADER ─── */
+.imgSkeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #0e0e0e;
+  overflow: hidden;
+}
+
+.imgSkeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 60, 0, 0.05) 40%,
+    rgba(255, 60, 0, 0.10) 50%,
+    rgba(255, 60, 0, 0.05) 60%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: imgShimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes imgShimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.filmThumbOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.25);
+  transition: background 0.15s;
+}
+
+.filmThumb:hover .filmThumbOverlay {
+  background: rgba(0, 0, 0, 0);
+}
+
+
+/* scroll indicator */
+.filmScrollTrack {
+  position: relative;
+  height: 1px;
+  margin-top: 6px;
+}
+
+.filmScrollBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: left 0.08s linear;
+  will-change: left, width;
+}
+
+.filmEmpty {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: #2a2a2a;
+}
+
+/* ─── LIGHTBOX ─── */
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.lightboxImg {
+  max-width: 90vw;
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
+  cursor: default;
+}
+
+.lightboxClose {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.lightboxClose:hover {
+  color: var(--white);
+}
 
 /* ─── PANEL CONTENT ─── */
 .panelContent {
@@ -279,7 +438,7 @@
     Row 2 — image: hard-locked 200px, position never changes.
     Row 3 — desc+buttons: fills all remaining height.
   */
-  grid-template-rows: 110px 240px 1fr;
+  grid-template-rows: 110px auto 1fr;
   gap: 16px;
   align-self: stretch;
   width: 100%;
@@ -302,21 +461,16 @@
   flex-shrink: 0;
 }
 
-/* ── Zone 2: Image ── */
-.imageZone {
-  position: relative;
-  padding: 6px;          /* keeps corner brackets from clipping */
-  /* height comes from grid row — immovable */
-}
+/* ── Zone 2: Film strip (no extra wrapper needed) ── */
 
 /* ── Zone 3: Desc + Buttons ── */
 .descZone {
   min-height: 0;
-  position: relative;    /* scopes absolutely-positioned animation children */
+  overflow: hidden;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden;
 }
 
 .panelMid {
@@ -343,7 +497,7 @@
 
 .panelStat {
   font-family: 'Space Mono', monospace;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--red);
   letter-spacing: .2em;
   margin-bottom: 26px;
@@ -351,11 +505,21 @@
 
 .panelDesc {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 13px;
-  color: #666;
-  line-height: 1.7;
-  max-width: 460px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.75;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 30px;
+}
+
+/* Paragraph spacing inside desc */
+.descPara {
+  margin: 0 0 14px;
+}
+
+.descPara:last-child {
+  margin-bottom: 0;
 }
 
 /* Word-slide clip wrapper — same pattern as About section */
@@ -380,19 +544,19 @@
 
 .tag {
   font-family: 'Space Mono', monospace;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: .15em;
-  border: 1px solid #222;
+  border: 1px solid rgba(255, 60, 0, 0.35);
   padding: 5px 12px;
-  color: #3a3a3a;
+  color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
   clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
 }
 
 .tagFirst {
   border-color: rgba(255, 60, 0, 0.35);
-  color: var(--red);
-  background: rgba(255, 60, 0, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
 }
 
 /* ─── ACTION BUTTONS ─── */
