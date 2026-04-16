@@ -3,6 +3,13 @@ import unifetchImg  from '../../assets/unifetch.png'
 import unifetchImg2 from '../../assets/unifetch-2.png'
 import unifetchImg3 from '../../assets/unifetch-3.png'
 import unifetchImg4 from '../../assets/unifetch-4.png'
+import budgetmateImg1 from '../../assets/budgetmate-1.png'
+import budgetmateImg2 from '../../assets/budgetmate-2.png'
+import budgetmateImg3 from '../../assets/budgetmate-3.png'
+import budgetmateImg4 from '../../assets/budgetmate-4.png'
+import budgetmateImg5 from '../../assets/budgetmate-5.png'
+import budgetmateImg6 from '../../assets/budgetmate-6.png'
+import budgetmateImg7 from '../../assets/budgetmate-7.png'
 import { motion, AnimatePresence } from 'framer-motion'
 import styles from './Projects.module.css'
 
@@ -10,7 +17,7 @@ const PROJECTS = [
   {
     num: '001',
     title: 'UNIFETCH',
-    desc: 'UniFetch is a full-stack web application that lets students discover German university programs independently — without paying consultancies or manually browsing dozens of university sites.\n\nUsers search and filter official DAAD data by degree type, teaching language, and intake period, then export results as a structured CSV for easy comparison. A scraping API handles dynamic content and extracts program details, university info, and admission requirements automatically.\n\nI built this after seeing how much time and money students waste collecting this data manually. UniFetch replaces that entire workflow with direct, reliable access to the information they need.\n\nStack: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Framer Motion (frontend) · Python Flask, Selenium, BeautifulSoup (backend) · Docker',
+    desc: 'UniFetch is a full-stack web application that lets students discover German university programs independently — without paying consultancies or manually browsing dozens of university sites.\n\nUsers search and filter official DAAD data by degree type, teaching language, and intake period, then export results as a structured CSV for easy comparison. A scraping API handles dynamic content and extracts program details, university info, and admission requirements automatically.\n\nI built this after seeing how much time and money students waste collecting this data manually. UniFetch replaces that entire workflow with direct, reliable access to the information they need.',
     tags: ['REACT', 'VITE', 'TAILWIND', 'FRAMER', 'FLASK', 'SELENIUM', 'BEAUTIFULSOUP', 'AWS'],
     stat: 'LIVE — VERCEL',
     github: 'https://github.com/Sahil-Lakhani/uni-fetch',
@@ -19,6 +26,26 @@ const PROJECTS = [
   },
   {
     num: '002',
+    title: 'BUDGETMATE',
+    desc: 'Snap a receipt, get structured data. Gemini pulls out the line items, prices, and categories — you review it, confirm, it goes into Firestore.\n\nThe first version used Tesseract OCR. It struggled with layout variation and needed a lot of post-processing to be useful. Swapping in a multimodal model fixed most of that. Malformed JSON and hallucinated category names still happen, so responses get sanitized and the prompt stays constrained. Nothing writes until the user reviews it.\n\n No backend, so rate limiting lives in localStorage. Sliding window, separate buckets for AI calls and DB writes. Manual entries and scanned receipts go through the same pipeline — no special casing. Firestore writes are read-before-write, and monthly insights cache by key. Stale key, stale cache. No timers.',
+    tags: ['REACT', 'FIREBASE', 'AI VISION', 'TESSERACT OCR', 'FIRESTORE', 'GRAPHANA', 'PROMETHEUS'],
+    stat: 'RECEIPT → DATA',
+    github: 'https://github.com/Sahil-Lakhani/BudgetMate',
+    demo: 'https://budget-mate-two.vercel.app/',
+    images: [budgetmateImg1, budgetmateImg7, budgetmateImg2, budgetmateImg3, budgetmateImg4, budgetmateImg5, budgetmateImg6],
+  },
+  {
+    num: '003',
+    title: 'AUTOQUOTE',
+    desc: 'AutoQuote is a Flutter app in production use across 20+ manufacturing companies and interior design businesses. It handles the full quotation flow — room-by-room line items, tax computation, branded PDF export. Invoice time dropped 75%. Billing errors dropped 90%.\n\nThe pricing engine supports both fixed unit and dimension-based sqft pricing in the same line item. Measurements are stored as feet and inches separately — 8\'6" converts to 8.5, not 8.6, which matters when you\'re calculating sqft on a wardrobe. GST applies to product value only, not transport or labour. Every total is a reactive getter, so the PDF always matches what\'s on screen.\n\nTeam access uses 6-character invite codes validated against a global Firestore index before writing — no collisions, no stale codes. Company catalogues are isolated by companyId. The PDF is built entirely in code — tables, conditional GST rows, advance payment terms, logo — straight from the same Quote object the UI renders.',
+    tags: ['FLUTTER', 'DART', 'FIREBASE', 'FIRESTORE', 'PDF'],
+    stat: '20+ COMPANIES',
+    github: '#',
+    demo: '#',
+    images: [],
+  },
+  {
+    num: '004',
     title: 'REALTIME COLLAB EDITOR',
     desc: 'CRDT-based document sync with sub-50ms latency across 3 regions. Serves 40k monthly active users with 99.9% uptime.',
     tags: ['TYPESCRIPT', 'WEBSOCKET', 'CRDT'],
@@ -28,7 +55,7 @@ const PROJECTS = [
     images: [],
   },
   {
-    num: '003',
+    num: '005',
     title: 'OBSERVABILITY PLATFORM',
     desc: 'Unified metrics and tracing pipeline built on OpenTelemetry. Replaced three vendor tools, reduced costs by 60%.',
     tags: ['GO', 'OTEL', 'CLICKHOUSE'],
@@ -38,13 +65,33 @@ const PROJECTS = [
     images: [],
   },
   {
-    num: '004',
-    title: 'CLI DEPLOY TOOLKIT',
-    desc: 'Zero-config deployment CLI for any cloud provider. 2,400 GitHub stars. Used by 300+ engineering teams worldwide.',
-    tags: ['GO', 'DOCKER', 'K8S'],
-    stat: '2.4K STARS',
-    github: '#',
-    demo: '#',
+    num: '006',
+    title: 'KIDA STUDIOS',
+    // subtitle: 'Pune · Feb 2024 – Jul 2025',
+    desc: 'Promoted from junior to lead within 12 months. Led backend architecture, infrastructure, and delivery across multiple production applications used by real clients.',
+    sections: [
+      {
+        label: 'IMPACT',
+        text: '35% backend performance improvement · 60% faster deployments · 40% reduction in production bugs',
+      },
+      {
+        label: 'Responsibilities & Leadership',
+        text: 'Led 7 engineers (4 interns, 3 developers) across 3+ projects running in parallel\nOwned architecture calls, code reviews, and kept delivery on schedule\nWorked directly with 2 stakeholders to keep technical work tied to product goals',
+      },
+      {
+        label: 'Technical Contributions',
+        items: [
+          'Architected and built scalable Django REST APIs — authentication systems, third-party integrations, webhook handling, background jobs, and database schema design across multiple production projects',
+          'Designed token-based auth flows and integrated Firebase Auth and Google Sign-In across mobile and web clients',
+          'Shipped Flutter and Swift apps — both live on App Store and Play Store',
+          'Optimized AWS infrastructure — right-sized EC2 instances, structured S3 for media access patterns, tuned Lambda functions for cold start performance and cost, reducing overall hosting costs by a measurable margin',
+          'Managed Firebase and Firestore at scale — query optimization, indexing strategy, and data modeling to minimize reads and improve response times',
+        ],
+      },
+    ],
+    tags: [],
+    github: null,
+    demo: null,
     images: [],
   },
 ]
@@ -403,6 +450,10 @@ export default function Projects({ isActive }) {
                 animate={isActive ? 'visible' : 'hidden'}
                 exit="exit"
               >
+                {project.subtitle && (
+                  <div className={styles.panelSubtitle}>{project.subtitle}</div>
+                )}
+
                 <motion.div className={styles.panelDesc} variants={descContainerVariants}>
                   {project.desc.split('\n\n').map((para, pi) => (
                     <p key={pi} className={styles.descPara}>
@@ -414,6 +465,32 @@ export default function Projects({ isActive }) {
                     </p>
                   ))}
                 </motion.div>
+
+                {project.sections && project.sections.map((section, si) => (
+                  <div key={si} className={styles.sectionBlock}>
+                    <span className={styles.sectionBlockLabel}>{section.label}</span>
+                    {section.text && <p className={styles.sectionBlockText}>{section.text}</p>}
+                    {section.stack && <p className={styles.sectionBlockStack}>{section.stack}</p>}
+                    {section.items && (
+                      <ul className={styles.sectionBlockItems}>
+                        {section.items.map((item, ii) => (
+                          <li key={ii}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+
+                {project.impact && (
+                  <div className={styles.impactList}>
+                    <span className={styles.impactLabel}>IMPACT</span>
+                    <ul>
+                      {project.impact.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 <motion.div className={styles.panelTags} variants={tagsContainerVariants}>
                   {project.tags.map((t, i) => (

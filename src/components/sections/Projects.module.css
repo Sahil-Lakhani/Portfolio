@@ -505,7 +505,7 @@
 
 .panelDesc {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 18px;
+  font-size: 22px;
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.75;
   width: 100%;
@@ -532,6 +532,115 @@
 
 .descWord > span {
   display: block;
+}
+
+/* ─── SUBTITLE ─── */
+.panelSubtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ─── CASE STUDY SECTIONS ─── */
+.sectionBlock {
+  margin-bottom: 18px;
+}
+
+.sectionBlockLabel {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .25em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.sectionBlockText {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+  margin: 0 0 6px;
+}
+
+.sectionBlockStack {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.8;
+  letter-spacing: .04em;
+  margin: 0;
+}
+
+.sectionBlockItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sectionBlockItems li {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.sectionBlockItems li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--red);
+  font-size: 11px;
+}
+
+/* ─── IMPACT LIST ─── */
+.impactList {
+  margin-bottom: 22px;
+}
+
+.impactLabel {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .25em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.impactList ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.impactList li {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.impactList li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--red);
+  font-size: 12px;
 }
 
 /* ─── TAGS ─── */
@@ -601,6 +710,86 @@
 .btnSecondary:hover {
   border-color: #555;
   background: rgba(240, 237, 230, 0.04);
+}
+
+/* ─── RESPONSIVE ─── */
+
+/* Large monitors ≥ 1080px tall — layout is comfortable, minor breathing room */
+@media (min-height: 1080px) {
+  .filmStrip {
+    height: 420px;
+  }
+  .panelContent {
+    padding: 56px 72px 56px 96px;
+  }
+}
+
+/* Laptop L — 900px < height < 1080px (e.g. 1440×900, 1600×900) */
+@media (max-height: 1079px) and (min-height: 901px) {
+  .filmStrip {
+    height: 286px;
+  }
+  .panelContent {
+    padding: 40px 56px 40px 72px;
+    gap: 14px;
+  }
+}
+
+/* Laptop M — 800px < height ≤ 900px (e.g. 1280×800, 1366×768 reads next rule) */
+@media (max-height: 900px) {
+  .filmStrip {
+    height: 200px;
+  }
+  .panelContent {
+    padding: 32px 48px 32px 64px;
+    gap: 12px;
+    grid-template-rows: 100px auto 1fr;
+  }
+  .panelDesc {
+    font-size: 20px;
+    line-height: 1.65;
+    margin-bottom: 22px;
+  }
+}
+
+/* Laptop S(mylaptop) — height ≤ 800px (e.g. 1366×768, 1280×720) */
+@media (max-height: 800px) {
+  .filmStrip {
+    height: 210px;
+  }
+  .panelContent {
+    padding: 24px 44px 24px 56px;
+    gap: 10px;
+    grid-template-rows: 88px auto 1fr;
+  }
+  .panelTitle {
+    font-size: clamp(40px, 5.5vw, 72px);
+  }
+  .panelDesc {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+}
+
+/* XS — height ≤ 700px (edge case: zoomed browsers, small displays) */
+@media (max-height: 700px) {
+  .filmStrip {
+    height: 120px;
+  }
+  .panelContent {
+    padding: 18px 40px 18px 52px;
+    gap: 8px;
+    grid-template-rows: 76px auto 1fr;
+  }
+  .panelDesc {
+    font-size: 17px;
+    margin-bottom: 12px;
+  }
 }
 
 /* ─── SCRAMBLE CHARS (global — injected via innerHTML on title) ─── */
