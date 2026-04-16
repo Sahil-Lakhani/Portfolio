@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import styles from './App.module.css'
 import Cursor from './components/Cursor'
 import NavDots from './components/NavDots'
@@ -19,6 +19,14 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState(0)
   const [transitioning, setTransitioning]   = useState(false)
   const [overlayPhase, setOverlayPhase]     = useState('idle')
+
+  useEffect(() => {
+    const log = () => console.log(`viewport: ${window.innerWidth} × ${window.innerHeight}`)
+    log()
+    window.addEventListener('resize', log)
+    return () => window.removeEventListener('resize', log)
+  }, [])
+
   // Called by Loader when ENTER is clicked — same wipe as section transitions
   const handleEnter = useCallback(() => {
     setTransitioning(true)
