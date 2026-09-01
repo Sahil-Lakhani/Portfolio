@@ -1,0 +1,30 @@
+.diecastText {
+  display: block;
+  font-family: 'Badeen Display', sans-serif;
+  font-size: clamp(68px, 9vw, 190px);
+  line-height: 1;
+  color: var(--white);
+  padding: 0;
+  margin: 0;
+  transform: translateY(-0.24em);
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* ============================================================
+   TABLET / COMPACT TIER (769–1199px)
+   Wordmark now spans the full width instead of a 288px column,
+   so it can grow without clipping horizontally. The vertical
+   top-crop from the desktop design is preserved.
+   Closed band: never applies at >=1200px (desktop) or <=768px
+   (phone). Both of those tiers are left exactly as they were.
+   ============================================================ */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .diecastText {
+    /* Wordmark spans the full grid width here. 22vw fills ~86% of it
+       (glyph advance measures 3.89x font-size). The 28vh term mirrors
+       the 20vh cap on row 1 in Hero.module.css so the top-crop ratio
+       stays ~0.72 — matching the desktop cell — in both directions. */
+    font-size: min(22vw, 28vh);
+  }
+}
