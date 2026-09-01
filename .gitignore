@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Shelved experiments — built but not mounted in the site.
+# Kept locally only; not tracked. See src/_experiments/README.md
+src/_experiments/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +26,36 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ── Secrets ─────────────────────────────────────────────────
+# Vite inlines anything prefixed VITE_ into the client bundle, so these must
+# never be committed. Commit .env.example instead.
+.env
+.env.*
+!.env.example
+
+# ── AI tooling ──────────────────────────────────────────────
+# Agent config, installed skill packs and brainstorm scratch state. Local to
+# whoever is working on the repo; none of it ships or builds.
+.claude/
+.superpowers/
+
+# ── Working notes ───────────────────────────────────────────
+# Session logs, specs and implementation plans. Useful while building, not
+# part of the site.
+TODO.md
+# Local-only: single-machine setup, so the repo does not need to carry it.
+CLAUDE.md
+docs/sessions/
+docs/session-*.md
+docs/superpowers/
+
+# ── Build & tooling caches ──────────────────────────────────
+.vite/
+.eslintcache
+coverage/
+*.tsbuildinfo
+
+# ── Deploy platform artifacts ───────────────────────────────
+.vercel/
+.netlify/
