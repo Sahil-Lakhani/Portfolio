@@ -1,0 +1,38 @@
+.cellLabel {
+  position: absolute;
+  top: 10px; left: 14px;
+  font-size: 8px;
+  color: #333;
+  letter-spacing: .2em;
+  font-family: 'Space Mono', monospace;
+  z-index: 10;
+}
+
+.imgInner {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.imgInner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.55);
+}
+
+/* .mapInner styles kept for reference when map is restored
+.mapInner { width: 100%; height: 100%; }
+.mapInner :global(.leaflet-tile) { filter: grayscale(20%) brightness(0.75); }
+.mapInner :global(.leaflet-container) { background: var(--black); }
+.mapInner :global(.leaflet-control-attribution) { display: none; } */
+
+@media (max-width: 768px) {
+  .cellLabel {
+    top: 8px;
+    left: 10px;
+    font-size: 7px;
+  }
+}
