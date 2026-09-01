@@ -1,0 +1,81 @@
+/* Sits above the grid layer. pointer-events: none so a hover anywhere in the
+   cell — including over the name itself — reaches the tiles underneath. There
+   is nothing interactive in here, and .bigName was already unselectable. */
+.nameInner {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 40px 40px 36px;
+}
+
+.nameLine {
+  display: block;
+  overflow: hidden;
+}
+
+.nameLine span { display: block; }
+
+.bigName {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 11vw, 180px);
+  line-height: .88;
+  letter-spacing: -.01em;
+  color: var(--white);
+  user-select: none;
+}
+
+.redDot { color: var(--red); }
+
+.nameSub {
+  font-size: 10px;
+  color: var(--red);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  margin-top: 20px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ============================================================
+   TABLET / COMPACT TIER (769–1199px)
+   Name column is narrower than desktop, so the type steps down
+   to match the reduced measure.
+   Closed band: never applies at >=1200px (desktop) or <=768px
+   (phone). Both of those tiers are left exactly as they were.
+   ============================================================ */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .nameInner {
+    padding: 32px 32px 30px;
+  }
+
+  .bigName {
+    font-size: clamp(56px, 9vw, 115px);
+  }
+
+  .nameSub {
+    font-size: 9px;
+    margin-top: 16px;
+    letter-spacing: .2em;
+  }
+}
+
+@media (max-width: 768px) {
+  .nameInner {
+    padding: 24px 22px 28px;
+  }
+
+  .bigName {
+    font-size: clamp(56px, 16vw, 120px);
+    line-height: .9;
+  }
+
+  .nameSub {
+    font-size: 9px;
+    margin-top: 14px;
+    letter-spacing: .18em;
+    line-height: 1.6;
+  }
+}
