@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 // import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet'
-import heroImg from '../../../assets/ChatGPT Image May 7, 2026, 11_37_19 PM.png'
+import heroImg from '../../../assets/stats.png'
 import styles from './HeroMap.module.css'
 
 const ease = [0.16, 1, 0.3, 1]
