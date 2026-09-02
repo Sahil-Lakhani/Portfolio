@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import styles from './Loader.module.css'
 import TextReveal from './TextReveal'
 import FlashCursor from './FlashCursor'
+import { isTouchDevice } from '../utils/isTouchDevice'
 
 // Animated loading dots — cycles . → .. → ... → repeat
 function LoadingDots() {
@@ -37,10 +38,11 @@ export default function Loader({ onEnter }) {
   }, [phase, onEnter])
 
   const showName = phase === 'reveal' || phase === 'ready'
+  const touch = isTouchDevice()
 
   return (
     <div className={styles.loader}>
-      <FlashCursor />
+      {!touch && <FlashCursor />}
 
       {/* — LOADING phase — */}
       <AnimatePresence>
@@ -91,7 +93,7 @@ export default function Loader({ onEnter }) {
 
       {/* — FLASHLIGHT HINT — */}
       <AnimatePresence>
-        {phase === 'ready' && (
+        {phase === 'ready' && !touch && (
           <motion.p
             key="flash-hint"
             className={styles.flashHint}
