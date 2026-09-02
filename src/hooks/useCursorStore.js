@@ -7,6 +7,8 @@
 export const cursorStore = {
   x: 0,
   y: 0,
+  mouseX: 0,               // actual mouse position — always current, never offset
+  mouseY: 0,
   expanded: false,         // true while over the text zone
   radius: 0,               // lerped radius (written by Cursor's RAF)
   loaderActive: false,     // true while FlashCursor is mounted
