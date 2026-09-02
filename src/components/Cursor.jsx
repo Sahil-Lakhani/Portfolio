@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import styles from './Cursor.module.css'
 import { cursorStore, notifyCursorListeners } from '../hooks/useCursorStore'
+import { isTouchDevice } from '../utils/isTouchDevice'
 
 const SMALL_R  = 9    // px radius when idle
 const BIG_R    = 120  // px radius when over text-reveal zone
@@ -13,8 +14,10 @@ export default function Cursor() {
   const [expanded, setExpanded] = useState(false) // text-reveal zone
   const [hovered, setHovered]   = useState(false) // regular interactive elements
   const rafRef = useRef(null)
+  const [touch] = useState(() => isTouchDevice())
 
   useEffect(() => {
+    if (touch) return
     const el = ref.current
     let targetR = SMALL_R
 
@@ -114,7 +117,9 @@ export default function Cursor() {
       document.removeEventListener('mouseover', onOver)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [])
+  }, [touch])
+
+  if (touch) return null
 
   return (
     <motion.div
