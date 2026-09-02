@@ -1,0 +1,74 @@
+/* Lit grid behind the name.
+
+   The whole interaction is the pair of transition durations below. A tile
+   carries a one-second fade by default, but its :hover rule overrides that
+   with zero — so the light arrives the instant the cursor enters and, once
+   the cursor leaves and the :hover rule stops applying, the base rule's slow
+   fade takes it back to dark. Sweeping across leaves a trail of cooling
+   squares with no state and no animation frame.
+
+   What lights is the border, not the cell: four edges in the tile's own
+   randomly assigned hue, plus a bloom around them. */
+
+.grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  /* The last row and column are partial — the tile count rounds up — so the
+     overflow is clipped rather than stretching the tiles off-square. */
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.tile {
+  /* Five shadows, and the hover rule below declares the same five in the same
+     order — box-shadow only interpolates between lists of equal length, so a
+     mismatch would snap instead of fade.
+
+     1-4: the cell's four edges. Idle, only right and bottom carry a hairline;
+          left and top are transparent so neighbours share one line rather than
+          stacking two.
+     5:   the bloom, held at zero spread and fully transparent until lit. */
+  box-shadow:
+    inset 1px 0 0 rgba(240, 237, 230, 0),
+    inset -1px 0 0 rgba(240, 237, 230, .045),
+    inset 0 1px 0 rgba(240, 237, 230, 0),
+    inset 0 -1px 0 rgba(240, 237, 230, .045),
+    0 0 0 rgba(240, 237, 230, 0);
+  background: transparent;
+  transition: box-shadow 1s ease-out;
+}
+
+.tile:hover {
+  /* All four edges take the tile's own hue, plus a bloom around it. No fill —
+     the light lives on the border. --hue is rolled per tile in NameGrid.jsx. */
+  box-shadow:
+    inset 1px 0 0 hsl(var(--hue, 20) 100% 62%),
+    inset -1px 0 0 hsl(var(--hue, 20) 100% 62%),
+    inset 0 1px 0 hsl(var(--hue, 20) 100% 62%),
+    inset 0 -1px 0 hsl(var(--hue, 20) 100% 62%),
+    0 0 18px hsl(var(--hue, 20) 100% 58% / .55);
+  transition: box-shadow 0s;
+}
+
+/* Touch has no real hover: a tap leaves :hover stuck on the tapped tile until
+   something else is touched, so squares would sit lit at random. The grid
+   stays as texture; only the lighting goes. */
+@media (hover: none) {
+  .tile:hover {
+    box-shadow:
+      inset 1px 0 0 rgba(240, 237, 230, 0),
+      inset -1px 0 0 rgba(240, 237, 230, .045),
+      inset 0 1px 0 rgba(240, 237, 230, 0),
+      inset 0 -1px 0 rgba(240, 237, 230, .045),
+      0 0 0 rgba(240, 237, 230, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .tile:hover {
+    transition: none;
+  }
+}
