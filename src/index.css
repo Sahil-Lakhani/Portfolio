@@ -10,6 +10,71 @@
   --red:   #ff3c00;
   --gray:  #1a1a1a;
   --mid:   #888;
+
+  /* Unified body-text token — used anywhere prose/descriptions are rendered */
+  --body-size: 20px;
+  --body-line-height: 1.7;
+
+  /* Lead / intro-statement token — sits one step above body in the hierarchy.
+     Used for section-opening copy (e.g. About) that needs more visual weight. */
+  --lead-size: 30px;
+  --lead-line-height: 1.45;
+
+  /* ── Page frame ────────────────────────────────────────────
+     One column shared by every content section, so the left and
+     right edges line up as you move between them.
+
+     --gutter  minimum breathing room at the screen edge
+     --measure widest the content column is ever allowed to get
+     --frame   the padding that produces both: the gutter on a
+               narrow screen, a centred column on a wide one. */
+  --gutter: 60px;
+  --measure: 1430px;
+  --frame: max(var(--gutter), calc((100% - var(--measure)) / 2));
+}
+
+/* ============================================================
+   TABLET / COMPACT TIER (769–1199px)
+   Type-scale step between the desktop and phone tokens.
+   Sits before the height queries so those can still refine
+   further on short landscape tablets.
+   Closed band: never applies at >=1200px (desktop) or <=768px
+   (phone). Both of those tiers are left exactly as they were.
+   ============================================================ */
+@media (min-width: 769px) and (max-width: 1199px) {
+  :root { --gutter: 44px; }
+
+  :root {
+    --body-size: 18px;
+    --body-line-height: 1.65;
+    --lead-size: 24px;
+    --lead-line-height: 1.45;
+  }
+}
+
+@media (max-height: 900px) {
+  :root {
+    --body-size: 19px;
+    --lead-size: 28px;
+  }
+}
+
+@media (max-height: 800px) {
+  :root {
+    --body-size: 18px;
+    --body-line-height: 1.65;
+    --lead-size: 25px;
+    --lead-line-height: 1.4;
+  }
+}
+
+@media (max-height: 700px) {
+  :root {
+    --body-size: 17px;
+    --body-line-height: 1.6;
+    --lead-size: 22px;
+    --lead-line-height: 1.35;
+  }
 }
 
 *, *::before, *::after {
@@ -44,6 +109,53 @@ iframe[src*="open.spotify.com"] {
   pointer-events: none !important;
 }
 
+/* ============================================================
+   MOBILE — native cursor, allow tap scroll, disable desktop
+   snap behavior. Section snap still works via touch swipe in
+   useScroll.js.
+   ============================================================ */
+@media (max-width: 768px) {
+  :root {
+    --body-size: 16px;
+    --body-line-height: 1.6;
+    --lead-size: 20px;
+    --lead-line-height: 1.45;
+  }
+
+  /* Kill the blob cursor styling everywhere on mobile. The
+     Cursor component returns null via isTouchDevice(), but we
+     also need to remove the `cursor: none` inherited from body
+     and every hover-only affordance. */
+  html,
+  body,
+  body * {
+    cursor: auto !important;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  /* Neutralise :hover animations on touch — they fire on tap
+     and stay stuck until another element is tapped. */
+  a:hover,
+  button:hover,
+  [data-cursor-hover]:hover {
+    background: inherit;
+  }
+}
+
+/* Touch-capable pointers (tablets, phones regardless of width):
+   also disable custom cursor. Desktops with mice are untouched. */
+@media (pointer: coarse) {
+  html,
+  body,
+  body * {
+    cursor: auto !important;
+  }
+}
+
 /* Noise overlay — global class (not scoped) since it has no CSS Module parent */
 .noise {
   position: fixed;
@@ -53,4 +165,40 @@ iframe[src*="open.spotify.com"] {
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px;
+}
+
+@media (max-width: 768px) {
+  :root { --gutter: 22px; }
+}
+
+/* ============================================================
+   LAPTOP / DESKTOP TIER (>=1200px)
+   Pulls 30px off each side of the page frame. Both halves of
+   --frame move together so the reduction is exactly 30px at any
+   width: the gutter drops 60 -> 30 where the frame is
+   gutter-bound, and the measure grows 1430 -> 1490 (60px total,
+   split either side) where it is measure-bound.
+   ============================================================ */
+@media (min-width: 1200px) {
+  :root {
+    --gutter: 30px;
+    --measure: 1490px;
+  }
+}
+
+/* ============================================================
+   LARGE DISPLAYS (>=1920px — 24" and up)
+   The fixed 1490px measure leaves 215px of dead gutter at 1920
+   and 535px at 2560. Past this width the column grows with the
+   screen instead, so the gutters stay an even 5% a side and the
+   content keeps its share of the glass.
+
+   Safe for prose: About caps its text at 960px and Skills and
+   Contact cap theirs in ch, so nothing stretches to an unreadable
+   measure just because the frame got wider.
+   ============================================================ */
+@media (min-width: 1920px) {
+  :root {
+    --measure: 90vw;
+  }
 }

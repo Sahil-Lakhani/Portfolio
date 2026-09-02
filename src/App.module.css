@@ -36,3 +36,15 @@
   transition: opacity 0.5s;
   white-space: nowrap;
 }
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .counter {
+    bottom: 14px;
+    right: 14px;
+    font-size: 9px;
+  }
+  .scrollHint {
+    display: none;
+  }
+}

@@ -9,7 +9,9 @@ import About from './components/sections/About'
 import Projects from './components/sections/Projects'
 import Skills from './components/sections/Skills'
 import Contact from './components/sections/Contact'
-// import FallingLetters from './components/FallingLetters'
+// Shelved — see src/_experiments/README.md (gitignored, local only)
+// import FallingLetters from './_experiments/FallingLetters'
+import ResumeOverlay from './components/ResumeOverlay'
 import useScroll from './hooks/useScroll'
 
 const TOTAL = 5
@@ -19,6 +21,10 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState(0)
   const [transitioning, setTransitioning]   = useState(false)
   const [overlayPhase, setOverlayPhase]     = useState('idle')
+  // Lives here rather than inside Contact because the section navigation is
+  // bound at this level: while the dialog is open, wheel, arrows and swipes
+  // have to stop moving the page out from under it.
+  const [resumeOpen, setResumeOpen]         = useState(false)
 
   useEffect(() => {
     const log = () => console.log(`viewport: ${window.innerWidth} × ${window.innerHeight}`)
@@ -55,7 +61,10 @@ export default function App() {
     }, 420)
   }, [transitioning, currentSection])
 
-  useScroll({ goTo, currentSection, loaded })
+  const closeResume = useCallback(() => setResumeOpen(false), [])
+  const openResume  = useCallback(() => setResumeOpen(true), [])
+
+  useScroll({ goTo, currentSection, loaded, paused: resumeOpen })
 
   return (
     <>
@@ -81,13 +90,15 @@ export default function App() {
             <About    isActive={currentSection === 1} />
             <Projects isActive={currentSection === 2} />
             <Skills   isActive={currentSection === 3} />
-            <Contact  isActive={currentSection === 4} />
+            <Contact  isActive={currentSection === 4} onOpenResume={openResume} />
           </div>
 
           {/* <FallingLetters isActive={currentSection === 2} /> */}
           <div className={styles.counter}>
             <span>{String(currentSection + 1).padStart(2, '0')}</span> / 05
           </div>
+
+          <ResumeOverlay open={resumeOpen} onClose={closeResume} />
         </>
       )}
     </>
