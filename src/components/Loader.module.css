@@ -77,6 +77,21 @@
   animation: glitchShake 4s infinite;
 }
 
+/* The hint is a single nowrap line, which overflows a phone at this tracking.
+   Narrow screens get it smaller, tighter and free to wrap; the ::before and
+   ::after glitch copies are positioned over it and inherit the same box, so
+   they keep lining up once it runs to two lines. */
+@media (max-width: 560px) {
+  .flashHint {
+    font-size: 9px;
+    letter-spacing: .14em;
+    white-space: normal;
+    width: min(86vw, 340px);
+    text-align: center;
+    line-height: 1.7;
+  }
+}
+
 .flashHint::before,
 .flashHint::after {
   content: attr(data-text);

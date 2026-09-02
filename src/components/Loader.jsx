@@ -39,6 +39,9 @@ export default function Loader({ onEnter }) {
 
   const showName = phase === 'reveal' || phase === 'ready'
   const touch = isTouchDevice()
+  const hint = touch
+    ? 'drag the light — search the other side'
+    : 'click to turn on the flashlight — search the other side'
 
   return (
     <div className={styles.loader}>
@@ -92,17 +95,20 @@ export default function Loader({ onEnter }) {
       </AnimatePresence>
 
       {/* — FLASHLIGHT HINT — */}
+      {/* Touch gets its own line: there is no cursor to turn on, and the light
+          is already drifting by itself, so the invitation is to take hold of it
+          rather than to switch it on. */}
       <AnimatePresence>
-        {phase === 'ready' && !touch && (
+        {phase === 'ready' && (
           <motion.p
             key="flash-hint"
             className={styles.flashHint}
-            data-text="click to turn on the flashlight — search the other side"
+            data-text={hint}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.6 } }}
             exit={{ opacity: 0 }}
           >
-            click to turn on the flashlight — search the other side
+            {hint}
           </motion.p>
         )}
       </AnimatePresence>
