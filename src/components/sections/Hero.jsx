@@ -17,7 +17,7 @@ export default function Hero({ isActive }) {
       <div className={styles.vignette} />
 
       <div className={styles.grid}>
-        <HeroName    anim={anim} className={`${styles.cell} ${styles.cellName}`} />
+        <HeroName    anim={anim} isActive={isActive} className={`${styles.cell} ${styles.cellName}`} />
         <HeroDiecast anim={anim} className={`${styles.cell} ${styles.cellDiecast}`} />
         <HeroMap     anim={anim} className={`${styles.cell} ${styles.cellMap}`} />
         <HeroGithub  anim={anim} isActive={isActive} className={`${styles.cell} ${styles.cellGithub}`} />
