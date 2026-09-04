@@ -5,26 +5,77 @@
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  z-index: 100;
+  gap: 0;
+  z-index: 120;
 }
 
+/* The button is a 28px target; the dot is drawn inside it. The visible mark
+   stays 6px, but the thing you actually have to hit was 8x8 — a fifth of a
+   fingertip, and under the 24x24 WCAG minimum. Gap is 0 because the targets
+   now provide their own spacing: 28px centre to centre, so no two overlap. */
 .dot {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.dot::before {
+  content: '';
   width: 6px;
   height: 6px;
   border: 1px solid #444;
   border-radius: 50%;
-  cursor: pointer;
-  background: transparent;
-  padding: 0;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background .2s, border-color .2s;
 }
 
-.dot:hover {
+.dot:hover::before {
   border-color: #666;
 }
 
-.active {
+/* Keyboard focus had no styling at all — only the UA default, which on a 6px
+   mark against black is effectively invisible. */
+.dot:focus-visible {
+  outline: none;
+}
+
+.dot:focus-visible::before {
+  outline: 1px solid var(--red);
+  outline-offset: 4px;
+}
+
+.active::before {
   background: var(--red);
   border-color: var(--red);
 }
+
+/* ── Mobile — move to bottom-center horizontal row ── */
+@media (max-width: 768px) {
+  .nav {
+    right: unset;
+    top: unset;
+    /* Clears the iOS home indicator, which sat on top of the old 16px. */
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 0;
+  }
+
+  /* Full 44px thumb targets. Five of them span 220px, which fits the
+     narrowest phone this site targets. */
+  .dot {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dot::before {
+    width: 8px;
+    height: 8px;
+  }
+}
+
