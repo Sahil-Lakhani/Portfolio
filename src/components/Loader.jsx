@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import styles from './Loader.module.css'
 import TextReveal from './TextReveal'
 import FlashCursor from './FlashCursor'
+import GlitchFlash from './GlitchFlash'
 import { isTouchDevice } from '../utils/isTouchDevice'
 
 // Animated loading dots — cycles . → .. → ... → repeat
@@ -39,13 +40,16 @@ export default function Loader({ onEnter }) {
 
   const showName = phase === 'reveal' || phase === 'ready'
   const touch = isTouchDevice()
-  const hint = touch
-    ? 'drag the light — search the other side'
-    : 'click to turn on the flashlight — search the other side'
 
   return (
     <div className={styles.loader}>
       {!touch && <FlashCursor />}
+
+      {/* Touch has no cursor to sweep TextReveal's mask, so the hidden name is
+          shown by flashing it over the whole screen instead. Gated on showName
+          so it cannot fire over the LOADING text, before there is a name to
+          glitch away from. */}
+      {touch && showName && <GlitchFlash />}
 
       {/* — LOADING phase — */}
       <AnimatePresence>
@@ -95,20 +99,17 @@ export default function Loader({ onEnter }) {
       </AnimatePresence>
 
       {/* — FLASHLIGHT HINT — */}
-      {/* Touch gets its own line: there is no cursor to turn on, and the light
-          is already drifting by itself, so the invitation is to take hold of it
-          rather than to switch it on. */}
       <AnimatePresence>
-        {phase === 'ready' && (
+        {phase === 'ready' && !touch && (
           <motion.p
             key="flash-hint"
             className={styles.flashHint}
-            data-text={hint}
+            data-text="click to turn on the flashlight — search the other side"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.6 } }}
             exit={{ opacity: 0 }}
           >
-            {hint}
+            click to turn on the flashlight — search the other side
           </motion.p>
         )}
       </AnimatePresence>
