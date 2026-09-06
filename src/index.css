@@ -85,6 +85,10 @@
 
 html {
   scroll-behavior: auto;
+  /* Explicit rather than inherited from body. body's background propagates to
+     the canvas only while html has none, and a browser that tints its chrome
+     from the page reads the canvas colour — so state it where it's sampled. */
+  background: var(--black);
 }
 
 body {
@@ -93,12 +97,14 @@ body {
   font-family: 'Space Mono', monospace;
   overflow: hidden;
   cursor: none;
-  height: 100vh;
+  height: 100vh;   /* fallback for browsers without dvh */
+  height: 100dvh;
   width: 100vw;
 }
 
 #root {
-  height: 100vh;
+  height: 100vh;   /* fallback for browsers without dvh */
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
 }
