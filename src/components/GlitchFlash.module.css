@@ -1,0 +1,183 @@
+/* Full-screen glitch that flashes the hidden name.
+
+   Touch has no hover, so the flashlight reveal in TextReveal never opens on a
+   phone and D1ECAST would stay buried behind SAHIL for good. This shows it
+   instead — the screen tears over to it, holds long enough to actually be read,
+   and tears away again.
+
+   The tearing is confined to the first and last eighth of the flash. Glitching
+   continuously for the whole second and a half would be less readable, not more
+   convincing; the middle is a steady hold, kept alive by the much shorter split
+   loop on the pseudo-elements rather than by moving the word itself.
+
+   Everything here is stepped, so each keyframe holds and then jumps. Easing
+   between them reads as a smooth wipe, which is the opposite of a fault. */
+
+.flash {
+  position: fixed;
+  inset: 0;
+  z-index: 5;              /* over the name; under the red wipe at 500 */
+  display: grid;
+  place-items: center;
+  background: var(--black);
+  pointer-events: none;    /* ENTER stays tappable straight through it */
+  animation: shutter 1400ms steps(1, end) forwards;
+}
+
+/* Bands drop out and the screen jitters sideways on the way in and on the way
+   out; between 12% and 86% it sits still and legible. */
+@keyframes shutter {
+  0%   { clip-path: inset(44% 0 40% 0); transform: translateX(-9px); }
+  3%   { clip-path: inset(0 0 0 0);     transform: translateX(6px); }
+  6%   { clip-path: inset(10% 0 62% 0); transform: translateX(-12px); }
+  9%   { clip-path: inset(0 0 0 0);     transform: translateX(3px); }
+  12%  { clip-path: inset(0 0 0 0);     transform: none; }
+
+  86%  { clip-path: inset(0 0 0 0);     transform: none; }
+  89%  { clip-path: inset(64% 0 8% 0);  transform: translateX(10px); }
+  92%  { clip-path: inset(0 0 0 0);     transform: translateX(-5px); }
+  95%  { clip-path: inset(22% 0 58% 0); transform: translateX(7px); }
+  98%  { clip-path: inset(0 0 0 0);     transform: none; }
+  100% { clip-path: inset(50% 0 50% 0); opacity: 0; }
+}
+
+.word {
+  position: relative;
+  z-index: 1;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(80px, 16vw, 220px);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Chromatic aberration, in the classic glitch pair: cyan and magenta copies of
+   the word sitting on top of the original. Screen blending over the black
+   ground keeps them reading as fringing on the letters rather than as three
+   separate words, and leaves the overlap white where they line up. */
+.word::before,
+.word::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+}
+
+.word::before {
+  color: #00fff9;
+  animation: splitCyan 620ms steps(1, end) infinite;
+}
+
+.word::after {
+  color: #ff00c1;
+  animation: splitMagenta 780ms steps(1, end) infinite;
+}
+
+/* The two loops run at lengths that don't divide into each other, so the spikes
+   drift in and out of phase instead of always firing together. Each sits at a
+   1-2px offset most of the time and jumps to a clipped, far-displaced slice for
+   one short step — intermittent, the way a bad signal actually behaves. */
+@keyframes splitCyan {
+  0%   { transform: translate(-2px, 0);  clip-path: none; }
+  13%  { transform: translate(-10px, 1px); clip-path: inset(14% 0 56% 0); }
+  19%  { transform: translate(-2px, 0);  clip-path: none; }
+  52%  { transform: translate(-2px, 0);  clip-path: none; }
+  57%  { transform: translate(8px, -1px); clip-path: inset(63% 0 17% 0); }
+  62%  { transform: translate(-2px, 0);  clip-path: none; }
+  100% { transform: translate(-2px, 0);  clip-path: none; }
+}
+
+@keyframes splitMagenta {
+  0%   { transform: translate(2px, 0);   clip-path: none; }
+  31%  { transform: translate(9px, -1px); clip-path: inset(38% 0 34% 0); }
+  36%  { transform: translate(2px, 0);   clip-path: none; }
+  71%  { transform: translate(-7px, 1px); clip-path: inset(8% 0 74% 0); }
+  76%  { transform: translate(2px, 0);   clip-path: none; }
+  100% { transform: translate(2px, 0);   clip-path: none; }
+}
+
+/* ——— VCR / CRT treatment ———
+
+   Four layers over the black ground, all absolutely positioned so they stay out
+   of the grid flow that centres the word (an un-positioned ::before on a grid
+   container becomes a grid item and would push the word off-centre).
+
+   They sit above the word rather than behind it: scanlines that stop short of
+   the text read as a panel behind a caption, not as footage. Kept faint enough
+   that the second of steady hold is still comfortably readable.
+
+   The whole stack inherits .flash's clip-path, so it tears with everything else
+   on the way in and out instead of floating free of the glitch. */
+
+/* Scanlines, plus a vignette for the tube falloff at the edges. Static — the
+   lines themselves don't crawl; the tracking band below is the thing that moves. */
+.flash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0)   0px,
+      rgba(0, 0, 0, 0)   2px,
+      rgba(0, 0, 0, .26) 3px,
+      rgba(0, 0, 0, .26) 4px
+    ),
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .6) 100%);
+}
+
+/* Head static. Same turbulence tile as the global .noise in index.css so the
+   grain matches the rest of the site, but far heavier and jumping to a new
+   offset every step — a still grain reads as film, a jumping one as tape. */
+.flash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: .13;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px;
+  animation: vcrStatic 400ms steps(1, end) infinite;
+}
+
+@keyframes vcrStatic {
+  0%   { background-position:    0px    0px; }
+  20%  { background-position:  -37px   19px; }
+  40%  { background-position:   61px  -44px; }
+  60%  { background-position:  -18px   72px; }
+  80%  { background-position:   45px   31px; }
+  100% { background-position:  -63px  -12px; }
+}
+
+/* The tracking band: the pale wedge that drifts down a mistracked tape. This
+   one alone is not stepped — real tracking rolls smoothly, and stepping it
+   would turn a drift into a stutter. */
+.tracking {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 13%;
+  z-index: 4;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0)    0%,
+    rgba(255, 255, 255, .07) 30%,
+    rgba(255, 255, 255, .15) 50%,
+    rgba(255, 255, 255, .07) 70%,
+    rgba(255, 255, 255, 0)  100%
+  );
+  filter: blur(2px);
+  mix-blend-mode: screen;
+  animation: vcrRoll 2600ms linear infinite;
+}
+
+/* Starts fully clear of the top edge and runs past the bottom: the band is 13%
+   of the height, so 800% of its own height carries it right off screen. */
+@keyframes vcrRoll {
+  0%   { transform: translateY(-120%); }
+  100% { transform: translateY(800%); }
+}
