@@ -34,31 +34,80 @@
 }
 
 /* ——— ENTER button ——— */
+/* Centred with auto margins rather than translateX(-50%): Framer Motion
+   animates `y` on this element, and the inline transform it writes would
+   overwrite a transform-based centring, dropping the button half its own
+   width to the right. */
 .enterBtn {
   position: absolute;
   bottom: 15vh;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  color: #333;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--red);
   letter-spacing: .3em;
+  /* letter-spacing adds a trailing gap after the last letter, which reads as
+     an off-centre word inside a circle. Push back by the same amount. */
+  text-indent: .3em;
   text-transform: uppercase;
+
   background: none;
-  border: none;
+  border: 1px solid rgba(255, 60, 0, .3);
   cursor: none;
-  padding: 12px 0;
+  padding: 0;
   white-space: nowrap;
 }
 
-/* Thin line above enter button */
+/* Arc sweeping the rim. A conic gradient masked down to the outer 2px — the
+   mask keeps the disc's centre transparent so only the ring paints. */
 .enterBtn::before {
   content: '';
-  display: block;
-  width: 1px;
-  height: 28px;
-  background: #222;
-  margin: 0 auto 16px;
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg 250deg, var(--red) 340deg, transparent 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  animation: enterSweep 2.4s linear infinite;
+  pointer-events: none;
+}
+
+/* Ring pushing outwards on the same 2.4s beat, so the sweep and the pulse
+   stay in step rather than drifting against each other. */
+.enterBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--red);
+  animation: enterPulse 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes enterSweep {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes enterPulse {
+  0%        { transform: scale(1);    opacity: .55; }
+  70%, 100% { transform: scale(1.45); opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .enterBtn {
+    width: 92px;
+    height: 92px;
+    font-size: 9px;
+  }
 }
 
 /* ——— FLASHLIGHT HINT ——— */
