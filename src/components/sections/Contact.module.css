@@ -1,20 +1,148 @@
 .section {
   position: absolute;
   top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  width: 100%; height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
-  padding: 60px;
+  padding: 60px var(--frame);
   background: var(--black);
   overflow: hidden;
 }
 
+/* ── Left rail ──────────────────────────────────────────────── */
+.rail {
+  position: absolute;
+  left: max(14px, calc(var(--frame) - 34px));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  pointer-events: none;
+}
+
+.railRule {
+  width: 1px;
+  height: 54px;
+  background: linear-gradient(var(--red), transparent);
+}
+
+.railText {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .42em;
+  color: #4a4a4a;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+
+/* ── Two columns ────────────────────────────────────────────── */
+.cols {
+  position: relative;
+  width: 100%;
+  display: grid;
+  /* Three tracks, two children: the trailing 1fr is an empty spacer that keeps
+     the card off the right edge and sitting in the middle of the section. The
+     text column is capped rather than fluid — it needs about 560px and any
+     more just drags the card further right. */
+  grid-template-columns: minmax(0, 560px) minmax(320px, 440px) 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.colLeft { min-width: 0; }
+
+.colRight {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.resumeKicker {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .25em;
+  color: var(--red);
+  margin-bottom: 18px;
+}
+
+.resumeHeading {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  font-size: clamp(28px, 2.7vw, 46px);
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  color: var(--white);
+  max-width: 16ch;
+}
+
+.resumeLine {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.65;
+  color: #8d8d8d;
+  max-width: 38ch;
+  margin-top: 18px;
+}
+
+.resumeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 32px;
+  padding: 17px 30px;
+  border: 1px solid var(--red);
+  background: var(--red);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .2em;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.resumeBtn:hover {
+  background: transparent;
+  color: var(--red);
+}
+
+.resumeBtn:focus-visible {
+  outline: 1px solid var(--white);
+  outline-offset: 4px;
+}
+
+.btnArrow {
+  font-size: 14px;
+  line-height: 1;
+  transition: transform .25s cubic-bezier(.16, 1, .3, 1);
+}
+
+.resumeBtn:hover .btnArrow {
+  transform: translateY(3px);
+}
+
+.resumeMeta {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .18em;
+  color: #4a4a4a;
+  margin-top: 18px;
+}
+
+/* ── Headline ───────────────────────────────────────────────── */
 .bigContact {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(64px, 12vw, 160px);
-  line-height: .9;
+  /* Height-bound as well as width-bound: three lines of Bebas plus the intro,
+     three contact rows and the footer have to clear a 1440x780 laptop without
+     the column being clipped by the section's overflow. */
+  font-size: clamp(56px, min(8.4vw, 12.4vh), 148px);
+  line-height: .88;
   letter-spacing: -.01em;
 }
 
@@ -23,64 +151,282 @@
   overflow: hidden;
 }
 
-.contactLine span {
-  display: block;
+.contactLine span { display: block; }
+
+.redText { color: var(--red); }
+
+.intro {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  font-size: clamp(15px, 1.15vw, 19px);
+  line-height: 1.65;
+  color: #8d8d8d;
+  max-width: 42ch;
+  margin-top: clamp(16px, 2.6vh, 30px);
 }
 
-.redText {
-  color: var(--red);
-}
-
+/* ── Contact rows ───────────────────────────────────────────── */
 .links {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 60px;
+  margin-top: clamp(20px, 3.4vh, 42px);
+  max-width: 460px;
 }
 
 .link {
-  font-size: 12px;
-  color: #444;
-  letter-spacing: .12em;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(10px, 1.5vh, 16px) 4px;
   text-decoration: none;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.link:first-child {
+  border-top: 1px solid #1e1e1e;
+}
+
+/* The red rule is a second line drawn over the grey border and wiped in from
+   the left, rather than a colour swap — the wipe is the whole gesture. */
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s cubic-bezier(.16, 1, .3, 1);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.linkIcon {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #2c2c2c;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  transition: color 0.2s;
+  justify-content: center;
+  /* Brand colour where the row has one; the section accent otherwise. */
+  color: var(--brand, var(--red));
+  transition: background .25s, border-color .25s, color .25s;
 }
 
-.link:hover {
-  color: var(--white);
+.linkIcon svg {
+  width: 17px;
+  height: 17px;
 }
 
-.linkLabel {
-  font-size: 8px;
-  color: #2a2a2a;
-  width: 70px;
-  letter-spacing: .15em;
-  flex-shrink: 0;
+/* The old hover filled the badge and flipped the glyph to black. That cannot
+   work once the glyph carries a brand colour — a white GitHub mark on a red
+   fill, or a blue one, both lose the brand. The border takes the colour
+   instead and the mark is left alone. */
+.link:hover .linkIcon {
+  border-color: var(--brand, var(--red));
 }
 
+/* Now the row's only text, sitting in the grid's middle track. */
 .linkValue {
-  color: inherit;
+  min-width: 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: clamp(15px, 1.15vw, 18px);
+  color: #d8d8d8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color .25s;
 }
 
-.redStripe {
+.link:hover .linkValue { color: var(--white); }
+
+.linkArrow {
+  font-size: 17px;
+  color: var(--red);
+  opacity: .55;
+  transition: opacity .25s, transform .3s cubic-bezier(.16, 1, .3, 1);
+}
+
+.link:hover .linkArrow {
+  opacity: 1;
+  transform: translate(3px, -3px);
+}
+
+.link:focus-visible {
+  outline: 1px solid var(--red);
+  outline-offset: 4px;
+}
+
+.copyright {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: #3d3d3d;
+  margin-top: clamp(16px, 2.6vh, 44px);
+}
+
+/* ── Résumé block ──────────────────────────────────────────
+   No box. The right column is type and one button — the button is
+   the only enclosed shape in the section, which is what makes it
+   read as the thing to press. */
+/* ── Section marker ─────────────────────────────────────────
+   The 200px ghost numeral is gone. It duplicated the App-level
+   "05 / 05" counter directly beneath it, and being a huge block in
+   the corner it was what kept colliding with everything. A rule and
+   a label sit above the counter instead, which already carries the
+   number. */
+.sectionTag {
   position: absolute;
-  right: 0; top: 0;
-  width: 6px;
-  height: 100%;
+  right: var(--frame);
+  bottom: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .3em;
+  color: #9a9a9a;
+  pointer-events: none;
+}
+
+.tagRule {
+  width: 84px;
+  height: 1px;
   background: var(--red);
 }
 
-.big05 {
-  position: absolute;
-  right: 60px;
-  bottom: 40px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 200px;
-  color: #111;
-  line-height: 1;
-  pointer-events: none;
-  user-select: none;
+/* ============================================================
+   TABLET / COMPACT TIER (769–1199px)
+   ============================================================ */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .section {
+    padding: 56px var(--frame) 64px;
+    justify-content: safe center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rail { display: none; }
+
+  .cols {
+    grid-template-columns: 1fr minmax(280px, 380px);
+    gap: 48px;
+  }
+
+  .intro { margin-top: 24px; }
+
+  .links { margin-top: 30px; }
+
+  .copyright { margin-top: 30px; }
+
+
+
+
+  .sectionTag {
+    right: var(--frame);
+    bottom: 54px;
+    font-size: 10px;
+  }
+}
+
+/* ============================================================
+   MOBILE LAYOUT
+   ============================================================ */
+@media (max-width: 768px) {
+  .section {
+    padding: 34px var(--frame) 90px;
+    justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rail { display: none; }
+
+  .cols {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    align-items: start;
+  }
+
+  /* The socials live inside the text column, so on one column they cannot be
+     moved below the résumé while nested. Dissolving the column's own box makes
+     its children grid items in their own right, which `order` can then place:
+     headline, résumé, socials, footer. */
+  .colLeft {
+    display: contents;
+  }
+
+  .bigContact { order: 1; }
+  .intro      { order: 2; }
+  .colRight   { order: 3; }
+  .links      { order: 4; }
+  .copyright  { order: 5; }
+
+  /* The grid gap now provides the rhythm; the stacked margins would double it. */
+  .intro,
+  .links {
+    margin-top: 0;
+  }
+
+  .copyright {
+    margin-top: 4px;
+  }
+
+  .bigContact {
+    font-size: clamp(48px, 13vw, 90px);
+    line-height: .95;
+  }
+
+  .intro {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  .links {
+    max-width: 100%;
+  }
+
+  .link {
+    gap: 14px;
+    padding: 14px 2px;
+  }
+
+  .linkIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .linkIcon svg { width: 15px; height: 15px; }
+
+  .linkValue { font-size: 14px; }
+
+
+
+
+
+
+  .sectionTag {
+    right: var(--frame);
+    bottom: 50px;
+    font-size: 9px;
+    letter-spacing: .22em;
+  }
+}
+
+/* The card's heartbeat and the row wipes are decoration; drop them for anyone
+   who has asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .resumeBtn,
+  .btnArrow,
+  .linkArrow,
+  .link::after {
+    transition: none;
+  }
 }
