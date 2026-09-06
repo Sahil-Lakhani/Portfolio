@@ -1,18 +1,5 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import { cursorStore } from '../hooks/useCursorStore'
-import useTouchReveal from '../hooks/useTouchReveal'
-import { isTouchDevice } from '../utils/isTouchDevice'
-
-// Fractal noise, inlined as SVG so the cloud layer costs no request. Blurred
-// and screened over the word at the midpoint of each transition, it gives the
-// dissolve an actual texture — the mask alone thins evenly, which reads as a
-// fade rather than as mist.
-const CLOUD = `url("data:image/svg+xml,${encodeURIComponent(
-  `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'>` +
-    `<filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='4' seed='7'/></filter>` +
-    `<rect width='320' height='320' filter='url(#c)'/>` +
-  `</svg>`
-)}")`
 
 /**
  * TextReveal — mask reveal driven by the global cursor.
@@ -21,10 +8,6 @@ const CLOUD = `url("data:image/svg+xml,${encodeURIComponent(
  * this container (via data-cursor-expand). That same lerped radius + position
  * is read from cursorStore each RAF frame to punch a hole in the front layer,
  * exposing the back layer beneath.
- *
- * Touch devices have no cursor to do that, so useTouchReveal writes the same
- * fields from a synthetic light. Everything below reads the store and neither
- * knows nor cares which one is driving it.
  */
 export default function TextReveal({
   frontText  = 'SAHIL',
@@ -37,13 +20,9 @@ export default function TextReveal({
 }) {
   const containerRef = useRef(null)
   const frontRef     = useRef(null)
-  const cloudRef     = useRef(null)
   const hintRef      = useRef(null)
   const hintGoneRef  = useRef(false)
   const rafRef       = useRef(null)
-  const [touch]      = useState(isTouchDevice)
-
-  useTouchReveal({ containerRef, enabled: touch })
 
   useEffect(() => {
     function tick() {
@@ -66,24 +45,12 @@ export default function TextReveal({
           hintGoneRef.current = true
           hintRef.current.style.opacity = '0'
         }
-        // coreAlpha is the alpha at the centre of the hole. At 0 this is the
-        // original wide-open gradient; as useTouchReveal raises it toward 1 the
-        // hole thins from the middle out and the word closes back over itself.
-        const a = cursorStore.coreAlpha
-        const core = `rgba(0, 0, 0, ${a})`
-        const grad = `radial-gradient(circle ${r}px at ${lx}px ${ly}px, ${core} 0%, ${core} ${cursorStore.corePct}%, black 100%)`
+        const grad = `radial-gradient(circle ${r}px at ${lx}px ${ly}px, transparent 0%, transparent 82%, black 100%)`
         frontEl.style.WebkitMaskImage = grad
         frontEl.style.maskImage = grad
       } else {
         frontEl.style.WebkitMaskImage = 'none'
         frontEl.style.maskImage = 'none'
-      }
-
-      if (cloudRef.current) {
-        cloudRef.current.style.opacity = cursorStore.mist
-        // Drifts with the light rather than sitting still, so the texture
-        // belongs to the hole instead of looking like a stain on the screen.
-        cloudRef.current.style.transform = `translate(${lx * 0.06}px, ${ly * 0.06}px)`
       }
 
       rafRef.current = requestAnimationFrame(tick)
@@ -126,7 +93,12 @@ export default function TextReveal({
         style={{
           ...sharedText,
           position: 'absolute',
-          inset: 0,
+          // Overhangs by a pixel. Both layers land on the same fractional
+          // geometry, so at the edges they get identical partial antialiasing
+          // coverage and this black never quite covers the orange beneath —
+          // leaving a warm 1px outline around the block. Covering past the
+          // edge removes it; the mask hole is unaffected.
+          inset: '-1px',
           color: frontColor,
           background: 'var(--black)',
           WebkitMaskImage: 'none',
@@ -139,22 +111,7 @@ export default function TextReveal({
         {frontText}
       </div>
 
-      {/* Cloud layer — texture for the dissolve. Sits above both layers and
-          takes no input; opacity is driven from cursorStore each frame. */}
-      <div
-        ref={cloudRef}
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: '-12%',
-          backgroundImage: CLOUD,
-          backgroundSize: 'cover',
-          filter: 'blur(7px)',
-          mixBlendMode: 'screen',
-          opacity: 0,
-          pointerEvents: 'none',
-        }}
-      />
+      {/* HOVER hint removed */}
     </div>
   )
 }
