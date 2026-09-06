@@ -1,0 +1,127 @@
+/* The readable column. Deliberately quiet — the pile is the loud half, and
+   two loud halves side by side would fight. */
+
+.list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Spread the blocks down the full column rather than letting them bunch at
+     the top over a third of dead space. Collapses back to normal stacking the
+     moment the content is taller than the column. */
+  justify-content: space-between;
+  /* Only bites on genuinely short viewports — the blocks fit in the column at
+     every height this section is designed for. */
+  overflow-y: auto;
+  padding-right: 8px;
+  /* The scrollbar only ever appears on short viewports; keep it out of the
+     way rather than reserving a gutter for it everywhere. */
+  scrollbar-width: thin;
+}
+
+.group + .group {
+  margin-top: clamp(12px, 2.2vh, 24px);
+}
+
+.heading {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 9px;
+}
+
+.words {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--black);
+}
+
+.word {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: color .18s;
+}
+
+.word:hover {
+  color: var(--red);
+}
+
+/* The pile and the list share one selection, so a tile clicked over there
+   lights the matching word up over here. */
+.word[aria-pressed='true'] {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+
+.word:focus-visible {
+  outline: 1px solid var(--red);
+  outline-offset: 3px;
+}
+
+.sep {
+  margin: 0 7px;
+  color: #ccc;
+}
+
+.evidence {
+  font-family: 'Space Mono', monospace;
+  /* Matches the selected-skill line on the right. These name the projects, so
+     they carry the section's evidence and should not be its smallest text. */
+  font-size: 12px;
+  /* Tighter than the other mono lines: at 12px in a 420px column, .14em is
+     what pushes the longer ones onto a second line. */
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #999;
+  margin-top: 8px;
+}
+
+.evidence::before {
+  content: '└ ';
+  color: #ccc;
+}
+
+/* ── Tablet / compact ─────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .words {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+}
+
+/* ── Mobile ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .words {
+    font-size: 15px;
+    line-height: 1.85;
+  }
+
+  .sep {
+    margin: 0 5px;
+  }
+
+  .group + .group {
+    margin-top: clamp(14px, 2vh, 22px);
+  }
+
+  .heading {
+    font-size: 8px;
+    margin-bottom: 7px;
+  }
+
+  .evidence {
+    font-size: 11px;
+    letter-spacing: .1em;
+  }
+}

@@ -1,98 +1,240 @@
 .section {
   position: absolute;
   top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  width: 100%; height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 60px;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 60px var(--frame);
   background: var(--white);
   color: var(--black);
   overflow: hidden;
 }
 
+/* The composition is 420 (list) + 55 + 1px rule + 55 + 900 (pile cap) wide.
+   Past that
+   the section stops growing and centres instead — on a 27" monitor a
+   left-anchored block leaves a third of the screen empty on the right and
+   reads as a mistake rather than as a layout. Everything that should line up
+   with that block carries this measure. */
+/* The section's --frame padding is what centres the column now, so this only
+   has to stop the content stretching if the frame is ever removed. */
+.measure {
+  width: 100%;
+}
+
 .secLabel {
+  composes: measure;
   font-size: 9px;
   letter-spacing: .25em;
   color: var(--red);
-  margin-bottom: 40px;
+  margin-bottom: 28px;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
-.layout {
+/* ── Reveal panel ───────────────────────────────────────────
+   Occupies the vertical space the old two-column pill layout left
+   empty.
+
+   A FIXED height, not a minimum. The pile reads its container size
+   every frame and rebuilds itself from scratch when the size lands
+   in a different type tier — so a panel that grew for a long truth
+   would shrink the pile's box and re-drop the whole stack out from
+   under whoever just clicked a tile. The slot is sized to hold the
+   longest truth in the stack, and clips rather than pushes. */
+.reveal {
+  flex-shrink: 0;
+  height: clamp(130px, 20vh, 210px);
+  overflow: hidden;
   display: flex;
-  gap: 80px;
-  align-items: flex-start;
-  width: 100%;
-  max-width: 1100px;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
 }
 
-.col {
+.truth {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  font-size: clamp(26px, 3.6vw, 54px);
+  line-height: 1.16;
+  letter-spacing: -.01em;
+  color: var(--black);
+  max-width: 20ch;
+}
+
+.where {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #999;
+  margin-top: 18px;
+}
+
+.whereTech { color: var(--red); }
+
+.whereSep { margin: 0 8px; color: #ccc; }
+
+.prompt {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  font-size: clamp(20px, 2.5vw, 36px);
+  line-height: 1.35;
+  color: #666;
+  max-width: 26ch;
+}
+
+.promptHint {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+/* ── Two-column layout (>=1200px) ───────────────────────────
+   Left: the words a recruiter scans. Right: the thing you can
+   knock over, with the reveal panel sitting above it. The pile
+   no longer needs a width cap of its own — this column is what
+   bounds it now. */
+.cols {
+  composes: measure;
   flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 55px;
 }
 
-.colTitle {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  color: #aaa;
+.colLeft,
+.colRight {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A single full-height rule dividing the two halves, in the section's accent.
+   The gap is split evenly either side of it so the line sits centred in the
+   channel rather than hugging the pile. */
+.colRight {
+  border-left: 1px solid var(--red);
+  padding-left: 55px;
+}
+
+.colRight .reveal {
+  height: clamp(150px, 22vh, 215px);
+}
+
+.colRight .truth {
+  font-size: clamp(24px, min(2.8vw, 4.4vh), 46px);
+  max-width: 22ch;
+}
+
+.colRight .prompt {
+  font-size: clamp(20px, 2vw, 34px);
+  max-width: 28ch;
+}
+
+/* ── Toggle (<1200px) ───────────────────────────────────────
+   Defaults to SKILLS: words first, and no physics engine spun
+   up on a phone until someone asks for it. */
+.toggle {
+  display: flex;
+  flex-shrink: 0;
   margin-bottom: 24px;
 }
 
-.barRow {
-  margin-bottom: 16px;
-}
-
-.barLabel {
-  font-size: 10px;
-  letter-spacing: .08em;
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: space-between;
+.toggleBtn {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  padding: 9px 18px;
+  border: 1px solid var(--black);
+  background: transparent;
   color: var(--black);
+  cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
 }
 
-.barLevel {
-  font-size: 9px;
-  color: #999;
+.toggleBtn + .toggleBtn {
+  border-left: 0;
 }
 
-.barTrack {
-  height: 2px;
-  background: #ddd;
-  position: relative;
+.toggleBtn[aria-pressed='true'] {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
 }
 
-.barFill {
-  height: 100%;
-  background: var(--black);
+/* Red on red would swallow the seam between the two buttons. */
+.toggleBtn[aria-pressed='true'] + .toggleBtn {
+  border-left: 1px solid var(--black);
 }
 
-/* Tools row */
-.toolsRow {
-  margin-top: 32px;
+.panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.toolsLabel {
-  font-size: 9px;
-  color: #999;
-  letter-spacing: .15em;
-  margin-bottom: 10px;
+/* ── Reduced-motion fallback ────────────────────────────────
+   Same content, no physics. Reuses the pill styling the pile
+   replaced rather than inventing a second visual language. */
+.staticList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  padding-top: 8px;
+  list-style: none;
+  z-index: 2;
 }
 
-.pill {
+.staticRow { display: contents; }
+
+.pillLg {
   display: inline-block;
-  font-size: 9px;
-  border: 1px solid #ccc;
-  padding: 4px 10px;
-  margin: 3px;
-  color: #666;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
   letter-spacing: .06em;
+  border: 1px solid var(--black);
+  background: transparent;
+  padding: 8px 16px;
+  color: var(--black);
+  cursor: pointer;
+  transition: background .18s, color .18s;
+}
+
+.pillLg[aria-pressed='true'] {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .big04 {
   position: absolute;
-  right: 60px;
+  /* Relative to the section's padding box, which the frame has already
+     inset to the shared column. */
+  right: var(--frame);
   bottom: 40px;
   font-family: 'Bebas Neue', sans-serif;
   font-size: 200px;
@@ -100,4 +242,100 @@
   line-height: 1;
   pointer-events: none;
   user-select: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   TABLET / COMPACT TIER (769–1199px)
+   Closed band: never applies at >=1200px (desktop) or <=768px
+   (phone).
+   ============================================================ */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .section {
+    padding: 56px var(--frame) 48px;
+  }
+
+  .secLabel {
+    margin-bottom: 20px;
+  }
+
+  .reveal {
+    height: clamp(120px, 18vh, 180px);
+  }
+
+  .truth {
+    font-size: clamp(30px, 4.2vw, 46px);
+    max-width: 100%;
+  }
+
+  .prompt {
+    font-size: clamp(22px, 3vw, 32px);
+    max-width: 100%;
+  }
+
+  .big04 {
+    right: var(--frame);
+    bottom: 24px;
+    font-size: 120px;
+  }
+
+  .toggle {
+    margin-bottom: 20px;
+  }
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 768px) {
+  .section {
+    padding: 34px var(--frame) 28px;
+  }
+
+  .secLabel {
+    font-size: 8px;
+    margin-bottom: 16px;
+  }
+
+  .reveal {
+    height: clamp(100px, 22vh, 170px);
+  }
+
+  .truth {
+    font-size: clamp(22px, 6.4vw, 34px);
+    max-width: 100%;
+  }
+
+  .where {
+    font-size: 10px;
+    margin-top: 12px;
+    letter-spacing: .14em;
+  }
+
+  .prompt {
+    font-size: clamp(18px, 5vw, 26px);
+    max-width: 100%;
+  }
+
+  .pillLg {
+    font-size: 17px;
+    padding: 7px 13px;
+  }
+
+  .toggle {
+    margin-bottom: 18px;
+  }
+
+  .toggleBtn {
+    flex: 1;
+    font-size: 8px;
+    letter-spacing: .16em;
+    padding: 10px 12px;
+  }
+
+  .big04 {
+    right: var(--frame);
+    bottom: 18px;
+    font-size: 90px;
+  }
 }

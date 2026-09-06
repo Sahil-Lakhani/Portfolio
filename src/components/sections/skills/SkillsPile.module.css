@@ -1,0 +1,106 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+
+  /* The pile's height is its total tile area divided by the width it gets to
+     spread across, so a very wide container produces a shallow layer rather
+     than a heap. At 1440 the right-hand column is already narrower than this
+     cap and the cap does nothing; past ~1600 it keeps the pile proportioned,
+     and the gutter it leaves on the right is where .big04 already lives. */
+  max-width: 900px;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* none, not pan-y: with pan-y the compositor claims a vertical drag for
+     scrolling before Matter's touchmove ever runs, so tiles can't be thrown.
+     Skills is overflow: hidden with nothing to scroll on a phone, so giving
+     the gesture to the pile costs nothing. useScroll skips [data-no-nav], so
+     swiping the canvas doesn't change section either. */
+  touch-action: none;
+}
+
+.reset {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: #999;
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+
+.reset:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+  .reset {
+    font-size: 8px;
+    padding: 6px 10px;
+  }
+
+  /* Tablet portrait gives the pile a very tall, full-bleed container
+     (~805px at 834x1112), which settles into a shallow layer rather than a
+     heap. Capping the width trades width for height and keeps the pile
+     proportioned the way it is inside the desktop column. */
+  .wrap {
+    max-width: 620px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .reset {
+    font-size: 8px;
+    padding: 6px 10px;
+  }
+}
+
+/* ── Device-motion affordances ──────────────────────────────
+   Both sit under the RESET PILE button, in the same quiet mono
+   the rest of the section's controls use. */
+.motionBtn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  padding: 7px 12px;
+  border: 1px solid var(--red);
+  background: transparent;
+  color: var(--red);
+  cursor: pointer;
+}
+
+.motionHint {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: var(--red);
+  pointer-events: none;
+  animation: motionHintOut 4.2s ease forwards;
+}
+
+@keyframes motionHintOut {
+  0%, 70%  { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motionHint { animation: none; }
+}
