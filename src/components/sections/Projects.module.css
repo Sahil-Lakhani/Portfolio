@@ -2,12 +2,16 @@
 .section {
   position: absolute;
   top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  width: 100%; height: 100%;
   display: flex;
   flex-direction: row;
   align-items: stretch;
   overflow: hidden;
   transition: opacity 0.4s;
+  /* Shared page frame. The left rail and the right panel drop their own outer
+     insets below, so content starts exactly where it does in every other
+     section rather than at frame + 52. */
+  padding-inline: var(--frame);
 }
 
 /* ─── LEFT PANEL ─── */
@@ -19,14 +23,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 56px 40px 56px 52px;
+  padding: 56px 40px 56px 0;
   gap: 0;
 }
 
 .sectionLabel {
   position: absolute;
   top: 48px;
-  left: 52px;
+  left: 0;
   font-family: 'Space Mono', monospace;
   font-size: 11px;
   letter-spacing: .25em;
@@ -429,7 +433,7 @@
 
 /* ─── PANEL CONTENT ─── */
 .panelContent {
-  padding: 48px 60px 48px 80px;
+  padding: 48px 0 48px 80px;
   display: grid;
   /*
     Row 1 — title: 170px fits 2 lines of Bebas Neue at max font size
@@ -470,7 +474,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .panelMid {
@@ -505,9 +508,9 @@
 
 .panelDesc {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 22px;
+  font-size: var(--body-size);
   color: rgba(255, 255, 255, 0.85);
-  line-height: 1.75;
+  line-height: var(--body-line-height);
   width: 100%;
   max-width: 100%;
   margin-bottom: 30px;
@@ -552,7 +555,7 @@
 .sectionBlockLabel {
   display: block;
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .25em;
   color: var(--red);
   text-transform: uppercase;
@@ -561,15 +564,15 @@
 
 .sectionBlockText {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.65;
+  font-size: var(--body-size);
+  color: rgba(255, 255, 255, 0.85);
+  line-height: var(--body-line-height);
   margin: 0 0 6px;
 }
 
 .sectionBlockStack {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.3);
   line-height: 1.8;
   letter-spacing: .04em;
@@ -587,10 +590,10 @@
 
 .sectionBlockItems li {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
-  padding-left: 16px;
+  font-size: var(--body-size);
+  color: rgba(255, 255, 255, 0.85);
+  line-height: var(--body-line-height);
+  padding-left: 20px;
   position: relative;
 }
 
@@ -599,7 +602,7 @@
   position: absolute;
   left: 0;
   color: var(--red);
-  font-size: 11px;
+  font-size: 18px;
 }
 
 /* ─── IMPACT LIST ─── */
@@ -672,6 +675,7 @@
 .panelActions {
   display: flex;
   gap: 12px;
+  margin-top: 24px;
 }
 
 .btnPrimary,
@@ -720,7 +724,7 @@
     height: 420px;
   }
   .panelContent {
-    padding: 56px 72px 56px 96px;
+    padding: 56px 0 56px 96px;
   }
 }
 
@@ -730,7 +734,7 @@
     height: 286px;
   }
   .panelContent {
-    padding: 40px 56px 40px 72px;
+    padding: 40px 0 40px 72px;
     gap: 14px;
   }
 }
@@ -741,13 +745,11 @@
     height: 200px;
   }
   .panelContent {
-    padding: 32px 48px 32px 64px;
+    padding: 32px 0 32px 64px;
     gap: 12px;
     grid-template-rows: 100px auto 1fr;
   }
   .panelDesc {
-    font-size: 20px;
-    line-height: 1.65;
     margin-bottom: 22px;
   }
 }
@@ -758,7 +760,7 @@
     height: 210px;
   }
   .panelContent {
-    padding: 24px 44px 24px 56px;
+    padding: 24px 0 24px 56px;
     gap: 10px;
     grid-template-rows: 88px auto 1fr;
   }
@@ -766,8 +768,6 @@
     font-size: clamp(40px, 5.5vw, 72px);
   }
   .panelDesc {
-    font-size: 18px;
-    line-height: 1.6;
     margin-bottom: 16px;
   }
   .tag {
@@ -782,12 +782,11 @@
     height: 120px;
   }
   .panelContent {
-    padding: 18px 40px 18px 52px;
+    padding: 18px 0 18px 52px;
     gap: 8px;
     grid-template-rows: 76px auto 1fr;
   }
   .panelDesc {
-    font-size: 17px;
     margin-bottom: 12px;
   }
 }
@@ -802,3 +801,217 @@
   transition: color 0.05s;
 }
 
+
+/* ============================================================
+   TABLET / COMPACT TIER (769–1199px)
+   Narrower left rail and smaller card type. The reel geometry
+   (.reelViewport / .reelStrip / .card top) is deliberately NOT
+   touched — CENTER_OFFSET in Projects.jsx is hard-coded to it.
+   Closed band: never applies at >=1200px (desktop) or <=768px
+   (phone). Both of those tiers are left exactly as they were.
+   ============================================================ */
+/* ============================================================
+   STACKED LAYOUT — phones AND tablets.
+   Stacks the panels, kills the reel viewport, turns the section
+   into one scrolling column and reduces the font sizes.
+
+   Runs to 1199px rather than 768px: the two-panel row needs more
+   width than an iPad has, and the tablet tier that used to sit
+   between here and the desktop layout only existed to shrink the
+   reel — which this block hides outright.
+   ============================================================ */
+@media (max-width: 1199px) {
+  /* Root section is the single scroll container. All inner
+     `overflow: hidden` zones are relaxed so content flows. */
+  .section {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+  }
+
+  /* Collapse the left rail into a sticky top bar so prev/next
+     stays reachable while the reader scrolls the content. */
+  .left {
+    width: 100%;
+    min-width: 0;
+    padding: 24px 16px 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    background: var(--black);
+    z-index: 5;
+    border-bottom: 1px solid rgba(255, 60, 0, 0.15);
+  }
+
+  .sectionLabel {
+    position: static;
+    font-size: 9px;
+    margin-right: auto;
+    top: auto;
+    left: auto;
+  }
+
+  /* Hide desktop-only reel + counter */
+  .reelViewport,
+  .navCount,
+  .divider {
+    display: none;
+  }
+
+  /* Compact arrow chips for prev/next */
+  .navBtnFull {
+    width: 42px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .panel {
+    flex: 1 0 auto;
+    width: 100%;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  /* Grid → natural flow so everything stacks and scrolls */
+  .panelContent {
+    padding: 14px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    gap: 14px;
+    height: auto;
+    align-self: auto;
+  }
+
+  /* Remove desktop overflow:hidden on inner zones so intrinsic
+     height drives the scroll container. */
+  .titleZone {
+    overflow: visible;
+    justify-content: flex-start;
+    display: block;
+  }
+
+  .descZone {
+    overflow: visible;
+    min-height: 0;
+    display: block;
+  }
+
+  .panelMid {
+    overflow: visible;
+  }
+
+  /* Smaller title — no more 88px monsters */
+  .panelTitle {
+    font-size: clamp(30px, 8.5vw, 46px);
+    line-height: 0.95;
+    letter-spacing: .01em;
+  }
+
+  .titleUnderline {
+    margin-top: 8px;
+  }
+
+  /* Film strip — thinner, horizontal scroll already works */
+  .filmStripWrap {
+    padding: 5px;
+  }
+
+  .filmStrip {
+    height: 160px;
+    gap: 3px;
+  }
+
+  /* Body copy — one step down, tighter leading */
+  .panelDesc {
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+
+  .descPara {
+    margin: 0 0 10px;
+  }
+
+  /* Case study blocks (Kida Studios) */
+  .sectionBlock {
+    margin-bottom: 12px;
+  }
+
+  .sectionBlockLabel {
+    font-size: 9px;
+    letter-spacing: .22em;
+    margin-bottom: 6px;
+  }
+
+  .sectionBlockText,
+  .sectionBlockItems li {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .sectionBlockItems {
+    gap: 4px;
+  }
+
+  .sectionBlockItems li {
+    padding-left: 14px;
+  }
+
+  .sectionBlockItems li::before {
+    font-size: 14px;
+  }
+
+  /* Tags */
+  .panelTags {
+    gap: 5px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 3px 9px;
+    letter-spacing: .1em;
+  }
+
+  /* Buttons */
+  .panelActions {
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    font-size: 13px;
+    padding: 8px 20px;
+    letter-spacing: .1em;
+  }
+
+  /* Lightbox — tighter controls on mobile */
+  .lightboxClose {
+    top: 14px;
+    right: 18px;
+    font-size: 22px;
+  }
+}
+
+/* ============================================================
+   LARGE DISPLAYS (>=1920px)
+   The left rail is a fixed list of four names — it does not need
+   more room as the screen grows, but the project itself does. So
+   the rail's share drops and the panel takes the difference.
+   ============================================================ */
+@media (min-width: 1920px) {
+  .left {
+    width: 28%;
+  }
+
+  .panelContent {
+    padding-left: 100px;
+  }
+}
