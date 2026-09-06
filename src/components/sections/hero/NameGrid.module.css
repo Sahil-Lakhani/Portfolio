@@ -37,10 +37,17 @@
     inset 0 -1px 0 rgba(240, 237, 230, .045),
     0 0 0 rgba(240, 237, 230, 0);
   background: transparent;
-  transition: box-shadow 1s ease-out;
+  /* --crawl-fade is set by useGridCrawl so the tail is exactly as many tiles
+     long as that hook says; unset on desktop, where the 1s fallback is the
+     cool-down behind the cursor. */
+  transition: box-shadow var(--crawl-fade, 1s) ease-out;
 }
 
-.tile:hover {
+/* .lit is the touch-device stand-in for :hover, applied by useGridCrawl to the
+   tile a crawler is standing on. Sharing one rule keeps the two paths visually
+   identical — a crawler's trail cools exactly like a cursor's. */
+.tile:hover,
+.tile.lit {
   /* All four edges take the tile's own hue, plus a bloom around it. No fill —
      the light lives on the border. --hue is rolled per tile in NameGrid.jsx. */
   box-shadow:
@@ -53,10 +60,11 @@
 }
 
 /* Touch has no real hover: a tap leaves :hover stuck on the tapped tile until
-   something else is touched, so squares would sit lit at random. The grid
-   stays as texture; only the lighting goes. */
+   something else is touched, so squares would sit lit at random. Only the
+   hover lighting goes — :not(.lit) spares the crawlers, which are what the
+   grid is lit by on these devices. */
 @media (hover: none) {
-  .tile:hover {
+  .tile:hover:not(.lit) {
     box-shadow:
       inset 1px 0 0 rgba(240, 237, 230, 0),
       inset -1px 0 0 rgba(240, 237, 230, .045),
@@ -68,7 +76,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tile,
-  .tile:hover {
+  .tile:hover,
+  .tile.lit {
     transition: none;
   }
 }

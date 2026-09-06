@@ -4,7 +4,7 @@ import styles from './HeroName.module.css'
 
 const ease = [0.16, 1, 0.3, 1]
 
-export default function HeroName({ anim, className }) {
+export default function HeroName({ anim, isActive, className }) {
   return (
     <motion.div
       className={className}
@@ -15,7 +15,7 @@ export default function HeroName({ anim, className }) {
         visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease, delay: 0.05 } },
       }}
     >
-      <NameGrid />
+      <NameGrid isActive={isActive} />
 
       <div className={styles.nameInner}>
         <div className={styles.bigName}>
